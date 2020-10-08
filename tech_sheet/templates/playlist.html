@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="en">
+	<head>
+	<!-- Required meta tags -->
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+		<!-- Optional JavaScript -->
+		<!-- jQuery first, then Popper.js, then Bootstrap JS -->
+		<script
+			src="https://code.jquery.com/jquery-2.2.4.min.js"
+			integrity="sha256-BbhdlvQf/xTY9gja0Dq3HiwQF8LaCRTXxZKRutelT44="
+			crossorigin="anonymous"></script>
+		<script type="text/javascript" src="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
+		<link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-table/1.11.1/bootstrap-table.min.css">
+		<script type='text/javascript' src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-table/1.11.1/bootstrap-table.min.js"></script>
+		<style type="text/css">
+			body {
+				background-color: #f2f2f2;
+				 
+			}
+			.page_container {
+				margin: auto;
+				max-width: 80em;
+				padding: 1em;
+			}
+			.main_table {
+				background-color: #ffffff;
+			}
+			a, a:visited { color: #df1d8a; }
+			a:hover { color: #960c5a; }
+			a:active { color: #ebccdd; }
+		</style>
+		<script type='text/javascript'>
+			var data = {{data|tojson}};
+			var columns = {{columns|tojson}};
+			var length = {{length}};
+			
+			$( window ).load( function() {
+				$(function() {
+					$('#table').bootstrapTable({ 
+						data: data,
+						columns: columns,
+					});
+				});
+				$(function() {
+					$('#playlistsize').text( length );
+				});
+			});
+
+		</script>
+		<title>feiri_tech_maps</title>
+	</head>
+	<body>
+		<nav class="navbar navbar-dark bg-primary" style="background-color: #ba2376; border-radius: 0 !important">
+			<div class="container">
+				<span class="navbar-brand">
+					osu!list
+				</span>
+			</div>
+		</nav>
+		<div class="container">
+			<h2>{{title}}</h2>
+			<p>Playlist size: <b id="playlistsize">-1</b> maps</p>
+			<p>Please note that the definition of "tech" is not well-defined. It may range from person-to-person.</p>
+			<table
+				id="table"
+				data-search="true"
+				data-loading-template="loadingTemplate"
+				class="main_table">
+			</table>
+		</div>
+	</body>
+</html>
