@@ -30,10 +30,12 @@ class Playlist():
 		return [{
 			'field': 'beatmap_id',
 			'title': 'id',
+			'align': 'right',
 			'sortable': True
 		}, {
 			'field': 'title',
-			'title': 'Beatmap'
+			'title': 'Beatmap',
+			'switchable': False
 		}, {
 			'field': 'creator',
 			'title': 'Creator',
@@ -82,6 +84,11 @@ class Playlist():
 				'ar': x['diff_approach'],
 			})
 		return table_data
+
+	def get_duration( self ):
+		data = self.get_maps()
+		pl_duration = sum( [ int( x['total_length'] ) for x in data ] )
+		return time.strftime( '%Hhr %Mmin %Ss', time.gmtime( pl_duration ) )
 
 """ TESTING SHIT
 test = Playlist( 'osu_maps', 'feiri_tech_maps' )
