@@ -8,12 +8,14 @@ from utils import map_url_parse
 load_dotenv( find_dotenv() )
 OSU_TOKEN = os.getenv( 'OSU_TOKEN' )
 PASSWORD = os.getenv( 'MONGO_PASSWORD' )
+USERNAME = os.getenv( 'MONGO_USER' )
+CLUSTER = os.getenv( 'MONGO_CLUSTER' )
 
-maps_file_name = 'map_urls.txt'
-db_name = 'osu_maps'
-coll_name = 'feiri_tech_maps'
+maps_file_name = 'map_urls_2.txt'
+db_name = 'playlists'
+coll_name = '1'
 
-client = pymongo.MongoClient("mongodb+srv://Yifei:{}@cluster0.7n1ib.mongodb.net/{}?retryWrites=true&w=majority".format( PASSWORD, db_name ) )
+client = pymongo.MongoClient("mongodb+srv://{}:{}@{}.mongodb.net/{}?retryWrites=true&w=majority".format( USERNAME, PASSWORD, CLUSTER, db_name ) )
 collection = client[db_name][coll_name]
 
 api = osuapi( OSU_TOKEN )

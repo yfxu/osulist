@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<!-- Required meta tags -->
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+		<!-- Optional JavaScript -->
+		<!-- jQuery first, then Popper.js, then Bootstrap JS -->
+		<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
+		
+		<!-- bootstrap 4 -->
+		<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+		<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
+
+		<!-- bootstrap-table -->
+		<link href="https://unpkg.com/bootstrap-table@1.18.0/dist/bootstrap-table.min.css" rel="stylesheet">
+		<script src="https://unpkg.com/bootstrap-table@1.18.0/dist/bootstrap-table.min.js"></script>
+
+		<!-- pace.js loading bar -->
+        <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/pace/1.0.2/themes/white/pace-theme-minimal.css">
+        <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/pace/1.0.2/pace.js"></script>
+
+		<!-- icons -->
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+		
+		<!-- custom playlist files -->
+		<link href="{{ url_for('static', filename='styles/playlist_styles.css')}}" rel="stylesheet">
+		<script src="{{ url_for('static', filename='scripts/playlist.js')}}"></script>
+		<script type="text/javascript">
+			init_playlist( {{data|tojson}}, {{columns|tojson}}, {{pl_size|tojson}}, {{pl_desc|tojson}}, {{pl_title|tojson}}, {{pl_duration|tojson}}, {{pl_creator|tojson}} );
+		</script>
+
+		<title id="tab_title">osu!list</title>
+	</head>
+	<body>
+		<div class="card nav_card page_container">
+			<div>
+				<a href="/"><b>osu!list</b></a>
+			</div>
+			<div>
+				<a href="/"><b>login</b></a>
+			</div>
+		</div>
+		<div class="page_container">
+			<div class="card-group">
+				<div class="card" style="max-width: 12.15em">
+					<img src="https://lh3.googleusercontent.com/a-/AOh14Ghuij-NdmbDcxakDDvHu4Wp7OUnHhtBmKOKINZiOg=s600-k-no-rp-mo" class="playlist_cover">
+				</div>
+				<div class="card" style="overflow: hidden; text-overflow: ellipsis;">
+					<div class="card-body">
+						<h2 class="card-title"><b id="text_title">Card title</b></h2>
+						<p class="card-subtitle text-muted">Created by 
+							<b id="text_creator">None</b> &bull; 
+							<b id="text_size">0</b> maps, 
+							<b id="text_duration">duration</b></p>
+						<p class="card-text"><i id="text_desc">none</i></p>
+					</div>
+				</div>
+			</div>
+			<div class="card">
+				<div class="card-body card_toolbar">
+					<span class="fa fa-search form-control-feedback search_icon"></span>
+					<input class="search_bar" id="custom_search" type="text" placeholder="search..." autocomplete="off">
+				</div>
+			</div>
+			<table
+				id="table"
+				class="main_table table-sm table-striped">
+			</table>
+		</div>
+	</body>
+	<footer>
+		<div class="page_container card page_footer">
+			<div class="card-body">
+				<a href="https://github.com/yfxu/osulist">source</a>
+			</div>
+		</div>
+	</footer>
+</html>
