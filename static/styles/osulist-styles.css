@@ -1,0 +1,134 @@
+:root {
+	--navbar-font-color: #2b2427; 
+	--playlist-title-color: #222222;
+	--playlist-details-color: #616161;
+	--light-pink-1: #f6eff0;
+	--light-pink-2: #f0e6e7;
+	--white-pink: #faf5f6;
+}
+
+html {
+	margin: 0;
+	padding: 0;
+}
+
+body {
+	font-family: "Verdana", "Geneva", sans-serif;
+	font-size: 10pt;
+	background-color: #f6eff0;
+}
+
+a {
+	text-decoration: none;
+}
+
+.nav-link {
+	color: var( --navbar-font-color );
+}
+
+.nav-left {
+	padding-left: 4px;
+	line-height:12pt; 
+	height:18px;
+}
+
+.nav-right {
+	text-align: right;
+	padding-right: 4px;
+}
+
+.footer-link {
+	color: var( --navbar-font-color );
+	font-size: 8pt;
+}
+
+.pagetop {
+    font-size: 10pt;
+	color: var( --navbar-font-color );
+    line-height: 12px;
+}
+
+.playlist-item-top {
+	padding-left: 12px;
+	padding-bottom: 2px;
+}
+
+.playlist-item-bottom {
+	padding-left: 12px;
+	padding-bottom: 10px;
+}
+
+.playlist-title-link {
+	font-size: 10pt;
+	color: var( --playlist-title-color );
+}
+
+.playlist-details {
+	font-size: 7pt;
+	color: var( --playlist-details-color );
+}
+
+.playlist-table td, .playlist-table th {
+	font-size: 10pt;
+}
+
+table.dataTable.stripe tbody tr.odd, table.dataTable.display tbody tr.odd {
+    background-color: var( --light-pink-1 );
+}
+
+table.dataTable.display tbody tr.odd > .sorting_1, table.dataTable.order-column.stripe tbody tr.odd > .sorting_1 {
+    background-color: var( --light-pink-1 );
+}
+
+table.dataTable tbody tr {
+    background-color: var( --light-pink-2 );
+}
+
+table.dataTable.display tbody tr.even > .sorting_1, table.dataTable.order-column.stripe tbody tr.even > .sorting_1 {
+    background-color: var( --light-pink-2 );
+}
+
+table.dataTable.stripe tbody tr.odd:hover, table.dataTable.display tbody tr.odd:hover, 
+table.dataTable.display tbody tr.odd:hover > .sorting_1, table.dataTable.order-column.stripe tbody tr.odd:hover > .sorting_1,
+table.dataTable tbody tr:hover,
+table.dataTable.display tbody tr.even:hover > .sorting_1, table.dataTable.order-column.stripe tbody tr.even:hover > .sorting_1 {
+    background-color: var( --white-pink );
+}
+
+
+table.dataTable tbody tr td a {
+	color: #ff006f;
+}
+
+table.dataTable.row-border tbody th, table.dataTable.row-border tbody td, table.dataTable.display tbody th, table.dataTable.display tbody td {
+    border-top: none;
+}
+
+a.playlist-details-link {
+	color: var( --playlist-details-color );
+}
+
+a.playlist-details-link:hover {
+	text-decoration: underline;
+}
+
+.dataTables_wrapper .dataTables_filter {
+    padding-left: 12px;
+    float: none;
+    text-align: left;
+    font-size: 8pt;
+    line-height: 
+}
+
+.dataTables_wrapper .dataTables_filter input {
+    border: 1px solid #000;
+    border-radius: 0;
+    padding: 5px;
+    background-color: #fff;
+    margin-left: 3px;
+}
+
+form {
+	margin: 0;
+	padding: 0;
+}

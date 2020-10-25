@@ -1,0 +1,73 @@
+<html lang="en" op="news">
+  <head>
+    <meta name="referrer" content="origin">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="shortcut icon" href="favicon.ico">
+    <link href="{{ url_for('static', filename='styles/osulist-styles.css')}}" rel="stylesheet">
+    <title>osulist</title>
+  </head>
+  <body>
+    <center>
+      <table id="olmain" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#f6eff0">
+        <tr>
+          <td bgcolor="#ff006f">
+            <table border="0" cellpadding="0" cellspacing="0" width="100%" style="padding:2px">
+              <tr class="">
+                <td class="nav-left">
+                  <span class="pagetop">
+                    <b><a href="/" class="nav-link">osulist</a></b>
+                    <a href="/" class="nav-link">about</a>
+                  </span>
+                </td>
+                <td class="nav-right">
+                  <span class="pagetop">
+                    <a id='me' href="user?id=feiri" class="nav-link">feiri</a> |
+                    <a id='logout' href="logout?auth=d5419a765ebc93eefa92b1c5d3fb3d12326f65b9&amp;goto=news%3Fp%3D5" class="nav-link">logout</a>
+                  </span>
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+        <tr id="pagespace" title="" style="height:10px"></tr>
+        <tr>
+          <td>
+            <table border="0" cellpadding="0" cellspacing="0" class="itemlist">
+              {% for x in data %}
+              <tr>
+                <td class="playlist-item-top">
+                  <a href="/p/{{ x['playlist_id'] }}" class="playlist-title-link">{{ x['playlist_title'] }}</a>
+                </td>
+              </tr>
+              <tr class="playlist-details">
+                <td class="playlist-item-bottom">
+                  created by <a href="https://osu.ppy.sh/users/{{ x['playlist_creator_id'] }}" class="playlist-details-link">{{ x['playlist_creator_name'] }}</a> | 
+                  {{ x['playlist_size'] }} maps</td>
+              </tr>
+              {% endfor %}
+
+            </table>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <table width="100%" cellspacing="0" cellpadding="1">
+              <tr>
+                <td bgcolor="#ff006f"></td>
+              </tr>
+            </table>
+            <br>
+            <center>
+              <span class="yclinks footer-link">
+                <a href="https://github.com/yfxu/osulist" class="footer-link">source</a>
+                | <a href="https://discord.gg/Gy5uHsq" class="footer-link">discord</a>
+              </span>
+              <br><br>
+            </center>
+          </td>
+        </tr>
+      </table>
+    </center>
+  </body>
+  <script type='text/javascript' src='hn.js?yeOCTq4uYdV5J7KbDSdX'></script>
+</html>
