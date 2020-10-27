@@ -5,6 +5,7 @@ import utils.playlist_finder as playlist_finder
 import utils.osuapi as osuapi
 import utils.osuauth as osuauth
 import requests
+import pymongo
 from werkzeug.exceptions import HTTPException
 from flask import Flask, url_for, session, request
 from flask import render_template, redirect
@@ -15,10 +16,15 @@ from dotenv import load_dotenv, find_dotenv
 # import env variables
 load_dotenv( find_dotenv() )
 APP_SECRET_KEY = os.getenv( 'APP_SECRET_KEY' )
+
 OSU_TOKEN = os.getenv( 'OSU_TOKEN' )
 OSU_CLIENT_ID = os.getenv( 'OSU_CLIENT_ID' )
 OSU_CLIENT_SECRET = os.getenv( 'OSU_CLIENT_SECRET' )
 OAUTH_STATE = os.getenv( 'OAUTH_STATE' )
+
+MONGO_USER = os.getenv( 'MONGO_USER_PUBLIC' )
+MONGO_PASSWORD = os.getenv( 'MONGO_PASSWORD_PUBLIC' )
+MONGO_CLUSTER = os.getenv( 'MONGO_CLUSTER' )
 
 
 # constants
@@ -31,6 +37,10 @@ osu_base_url = 'https://osu.ppy.sh'
 # app setup
 app = Flask( __name__ )
 app.secret_key = APP_SECRET_KEY
+
+
+# connect to MongoDB
+client = pymongo.MongoClient( f"mongodb+srv://{ MONGO_USER }:{ MONGO_PASSWORD }@{ MONGO_CLUSTER }.mongodb.net/?retryWrites=true&w=majority" )
 
 
 @app.errorhandler( HTTPException )
@@ -81,7 +91,7 @@ def logout():
 """ home page """
 @app.route( '/' )
 def page_index():
-	pls = playlist_finder.Playlist_Finder( playlist_details_db_name, playlist_details_collection_name )
+	pls = playlist_finder.Playlist_Finder( client, playlist_details_db_name, playlist_details_collection_name )
 
 	pls_rows = pls.get_rows()
 	pls_cols = pls.get_columns()
@@ -132,22 +142,80 @@ def page_beatmap( map_id ):
 	)
 
 
+""" delete song from playlist """
 @app.route( '/delete_map', methods = ['POST'] )
 def delete_map():
 	playlist_id = request.form.get( 'playlist_id' )
 	user_id = request.form.get( 'user_id' )
 	beatmap_id = request.form.get( 'beatmap_id' )
 
-	pl = playlist.Playlist( playlists_db_name, playlist_id )
+	pl = playlist.Playlist( client, playlists_db_name, playlist_id )
 	pl.delete_map( user_id, beatmap_id )
-
 	return redirect( '/p/' + playlist_id )
+
+
+""" route user to playlist add maps page or submit map add form """
+@app.route( '/p/<pl_id>/add', methods = ['GET', 'POST'] )
+def add_map( pl_id ):
+	# POST method handler
+	if request.method == 'POST':
+		beatmap_str = request.form.get( 'beatmap_str' )
+		user_id = "3214844"
+		pl = playlist.Playlist( client, playlists_db_name, pl_id )
+
+		status_msg = pl.add_map( user_id, beatmap_str )
+
+	# GET method handler
+	elif request.method == 'GET':
+		status_msg = ""
+	
+	pl_data = { 'id': pl_id }
+
+	return render_template(
+		"playlist_add_map_template.html",
+		pl = pl_data,
+		status_msg = status_msg
+	)
+
+
+""" route user to playlist edit page or submit edit form """
+@app.route( '/p/<pl_id>/edit', methods = ['GET', 'POST'] )
+def edit_playlist( pl_id ):
+	# POST method handler
+	if request.method == 'POST':
+		title = request.form.get( 'title' )
+		desc = request.form.get( 'desc' )
+
+		pl = playlist.Playlist( client, playlists_db_name, pl_id )
+		pl.edit_details( title, desc )
+
+		return redirect( f'/p/{ pl_id }' )
+
+	# GET method handler
+	elif request.method == 'GET':
+		pl = playlist.Playlist( client, playlists_db_name, pl_id )
+		pl_details = pl.get_details()
+
+		pl_data = {}
+		pl_data['id'] = pl_id
+		pl_data['title'] = pl_details['playlist_title']
+		pl_data['desc'] = pl_details['playlist_desc']
+
+		return render_template(
+			"playlist_edit_template.html",
+			pl = pl_data 
+		)
+
+	else:
+		return render_template(
+			"error_template.html"
+		)
 
 
 """ route user to playlist page """
 @app.route( '/p/<pl_id>' )
 def page_playlist( pl_id ):
-	pl = playlist.Playlist( playlists_db_name, pl_id )
+	pl = playlist.Playlist( client, playlists_db_name, pl_id )
 	pl_details = pl.get_details()
 	pl_rows = pl.get_rows()
 	pl_cols = pl.get_columns()

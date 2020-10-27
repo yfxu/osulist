@@ -1,0 +1,3 @@
+- abuse protection? check for minimum playcount on user account before permitting access to use the website
+- actual usable login authentication to protect playlist operations
+- max length for playlist title and desc

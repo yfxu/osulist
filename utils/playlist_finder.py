@@ -7,9 +7,6 @@ from .osuapi import Osuapi
 
 # load environment variables
 load_dotenv( find_dotenv() )
-MONGO_USER = os.getenv( 'MONGO_USER_PUBLIC' )
-MONGO_PASSWORD = os.getenv( 'MONGO_PASSWORD_PUBLIC' )
-MONGO_CLUSTER = os.getenv( 'MONGO_CLUSTER' )
 OSU_TOKEN = os.getenv( 'OSU_TOKEN' )
 
 # common URLs
@@ -23,14 +20,14 @@ class Playlist_Finder():
 		- provides methods to fetch data from MongoDB and format it into usable data for the website
 		- requires database > collection to be initialized
 	""" 
-	def __init__( self, db, collection ):
+	def __init__( self, cli, db, collection ):
+		self.client_con = cli
 		self.db = db
 		self.collection = collection
-		self.mongo_client_str = "mongodb+srv://{}:{}@{}.mongodb.net/{}?retryWrites=true&w=majority".format( MONGO_USER, MONGO_PASSWORD, MONGO_CLUSTER, self.db )
 		self.playlist_details = self.fetch_playlist_details()
 	
 	def client( self ):
-		return pymongo.MongoClient( self.mongo_client_str )[self.db][self.collection]
+		return self.client_con[self.db][self.collection]
 
 	def fetch_playlist_details( self ):
 		client = self.client()

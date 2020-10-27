@@ -1,12 +1,19 @@
-function init_playlist( data, columns, pl_size, pl_desc, pl_title, pl_duration, pl_creator, pl_osu_beatmap_url ) {
+function init_playlist( data, columns ) {
 	$( window ).on( 'load', function() {
 		$(function() {
-			$('#playlist-table').DataTable( { 
+			var table = $('#playlist-table').DataTable( { 
 				data: data,
 				columns: columns,
 				paging: false,
-				info: false
+				info: false,
+				responsive: true
 			});
+
 		});
 	});
+	
+	/*$('#playlist-table tbody').on( 'click', '.remove', function () {
+	   	$(this).parents('form')[0].submit();
+	    $('#playlist-table').DataTable().row( $(this).parents('tr') ).remove().draw();
+	});*/
 }

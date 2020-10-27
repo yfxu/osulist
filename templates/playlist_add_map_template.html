@@ -3,12 +3,23 @@
     <meta name="referrer" content="origin">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="shortcut icon" href="favicon.ico">
+    
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+
+    <!-- DataTables -->
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.22/css/jquery.dataTables.min.css">
+    <script type="text/javascript" src="https://cdn.datatables.net/1.10.22/js/jquery.dataTables.min.js"></script>
+    <link href="https://nightly.datatables.net/responsive/css/responsive.dataTables.css?_=0733d80df58ca2854b640850303e9ae6.css" rel="stylesheet" type="text/css" />
+    <script src="https://nightly.datatables.net/responsive/js/dataTables.responsive.js?_=0733d80df58ca2854b640850303e9ae6"></script>
+
     <link href="{{ url_for('static', filename='styles/osulist-styles.css')}}" rel="stylesheet">
-    <title>osulist</title>
+
+    <title>Edit: {{ pl['title'] }} | osulist</title>
   </head>
   <body>
     <center>
-      <table id="olmain" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#f6eff0">
+      <table id="olmain" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#f6eff0" style="background-color: #f6eff0">
         <tr>
           <td bgcolor="#ff006f">
             <table border="0" cellpadding="0" cellspacing="0" width="100%" style="padding:2px">
@@ -32,21 +43,33 @@
         <tr id="pagespace" title="" style="height:10px"></tr>
         <tr>
           <td>
-            <table border="0" cellpadding="0" cellspacing="0" class="itemlist">
-              {% for x in data %}
+            <table border="0" cellpadding="2" cellspacing="0" class="itemlist">
+              <form action="/p/{{ pl['id'] }}/add" method="POST">
+                <tr>
+                  <td class="playlist-item-top playlist-title-link">
+                    beatmap ID or link:
+                  </td>
+                  <td>
+                    <input type="text" name="beatmap_str" size="50">
+                  </td>
+                </tr>
+                <tr>
+                  <td>&nbsp;</td>
+                  <td>
+                    <input type="submit" name="submit" value="Add">
+                  </td>
+                </tr>
+              </form>
               <tr>
-                <td class="playlist-item-top">
-                  <a href="/p/{{ x['playlist_id'] }}" class="playlist-title-link">{{ x['playlist_title'] }}</a>
-                </td>
+                <td>&nbsp;</td>
+                <td class="playlist-item-top playlist-title-link">{{ status_msg }}</td>
               </tr>
-              <tr class="playlist-details">
-                <td class="playlist-item-bottom">
-                  created by <a href="https://osu.ppy.sh/users/{{ x['playlist_creator_id'] }}" class="playlist-details-link">{{ x['playlist_creator_name'] }}</a> | 
-                  {{ x['playlist_size'] }} maps</td>
+              <tr>
+                <td><br></td>
               </tr>
-              {% endfor %}
-
+              <table id="playlist-table" class="playlist-table display compact" style="width: 99%"></table>
             </table>
+            <br>
           </td>
         </tr>
         <tr>

@@ -4,13 +4,11 @@ import time
 from dotenv import load_dotenv, find_dotenv
 from .html_utils import html_a_blank_format, html_a_format, html_delete_format
 from .time_utils import time_format_num, time_format_str
+from .osuapi import Osuapi
 
-import time
+
 # load environment variables
 load_dotenv( find_dotenv() )
-MONGO_USER = os.getenv( 'MONGO_USER_PUBLIC' )
-MONGO_PASSWORD = os.getenv( 'MONGO_PASSWORD_PUBLIC' )
-MONGO_CLUSTER = os.getenv( 'MONGO_CLUSTER' )
 OSU_TOKEN = os.getenv( 'OSU_TOKEN' )
 
 # common URLs
@@ -26,16 +24,19 @@ class Playlist():
 		- provides methods to fetch data from MongoDB and format it into usable data for the website
 		- requires database > collection to be initialized
 	""" 
-	def __init__( self, db, collection ):
+	def __init__( self, cli, db, collection ):
+		self.client_con = cli
 		self.db = db
 		self.collection = collection
-		self.mongo_client_str = "mongodb+srv://{}:{}@{}.mongodb.net/{}?retryWrites=true&w=majority".format( MONGO_USER, MONGO_PASSWORD, MONGO_CLUSTER, self.db )
 		self.map_data = self.fetch_maps()
 		self.playlist_details = self.fetch_details()
 		#print( "Playlist details:", self.playlist_details )
 
 	def client( self ):
-		return pymongo.MongoClient( self.mongo_client_str )[self.db][self.collection]
+		return self.client_con[self.db][self.collection]
+
+	def details_client( self ):
+		return self.client_con['playlist_details']['details']
 
 	# get map playlist data from mongodb
 	def fetch_maps( self ):
@@ -45,25 +46,54 @@ class Playlist():
 
 	# get map playlist data from mongodb
 	def fetch_details( self ):
-		client = pymongo.MongoClient( self.mongo_client_str )['playlist_details']['details']
+		client = self.details_client()
 		data = client.find( { 'playlist_id': self.collection } )
 		return list( data )
 
-	def add_map( self, beatmap_id ):
-		try:
-			beatmap_id = beatmap_id.split('/')[5].strip()
-			if beatmap_id :
-				pass
-		except:
-			raise("fucked lmao")
+	# edit playlist details
+	def edit_details( self, title, desc ):
+		client = self.details_client()
+		client.update_one( { 'playlist_id': self.collection }, { '$set': { 'playlist_title': title } } )
+		client.update_one( { 'playlist_id': self.collection }, { '$set': { 'playlist_desc': desc } } )
 
+	# add map to playlist
+	# return:
+	#	 0 > successfully added beatmap
+	#	-1 > failed to add beatmap ( presumably due to bad input string )
+	def add_map( self, user_id, beatmap_str ):
+		# attempt to parse beatmap_id from url
+		try:
+			beatmap_id = beatmap_str.split('/')[5].strip()
+		except:
+			beatmap_id = beatmap_str
+
+		api = Osuapi( OSU_TOKEN )
+		client = self.client()
+
+		# try to add the beatmap given the best interpretation of the beatmap_id
+		try:
+			x = api.get_beatmap( beatmap_id )
+			response = client.replace_one( { 'beatmap_id': beatmap_id }, x, upsert=True )
+			
+			if response.upserted_id is not None:
+				client = self.details_client()
+				client.update_one( { 'playlist_id': self.collection }, { '$set': { 'playlist_size': self.get_size() + 1 } } )
+				return f"successfully added { x['artist'] } - { x['title'] } [{ x['version'] }] ({ x['creator'] })"
+			else:
+				return f"{ x['artist'] } - { x['title'] } [{ x['version'] }] ({ x['creator'] }) already exists in the playlist"
+		except Exception as e:
+			print(e)
+			return "could not find the specified beatmap"
+		
+
+	# delete map from playlist
 	def delete_map( self, user_id, beatmap_id ):
 		# remove map
 		client = self.client()
 		client.delete_one( { 'beatmap_id': beatmap_id } )
 
 		# update playlist details
-		client = pymongo.MongoClient( self.mongo_client_str )['playlist_details']['details']
+		client = self.details_client()
 		client.update_one( { 'playlist_id': self.collection }, { '$set': { 'playlist_size': self.get_size() - 1 } } )
 
 	# get columns for display in playlist pages

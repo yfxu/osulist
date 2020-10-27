@@ -5,6 +5,7 @@
 	--light-pink-1: #f6eff0;
 	--light-pink-2: #f0e6e7;
 	--white-pink: #faf5f6;
+	--dark-pink: #e0d3d9;
 }
 
 html {
@@ -88,11 +89,11 @@ table.dataTable.display tbody tr.even > .sorting_1, table.dataTable.order-column
     background-color: var( --light-pink-2 );
 }
 
-table.dataTable.stripe tbody tr.odd:hover, table.dataTable.display tbody tr.odd:hover, 
+table.dataTable.stripe tbody tr.odd:hover, table.dataTable.display tbody tr.odd:hover, table.dataTable tbody tr:hover,
+table.dataTable.hover tbody tr:hover, table.dataTable.display tbody tr:hover,
 table.dataTable.display tbody tr.odd:hover > .sorting_1, table.dataTable.order-column.stripe tbody tr.odd:hover > .sorting_1,
-table.dataTable tbody tr:hover,
 table.dataTable.display tbody tr.even:hover > .sorting_1, table.dataTable.order-column.stripe tbody tr.even:hover > .sorting_1 {
-    background-color: var( --white-pink );
+    background-color: var( --dark-pink );
 }
 
 
