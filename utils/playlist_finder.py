@@ -66,5 +66,27 @@ class Playlist_Finder():
 			})
 		return table_data
 
+	# insert new playlist
+	def new_playlist( self, creator_id ):
+		client = self.client()
+		api = Osuapi( OSU_TOKEN )
+
+		playlist_id = str( int( max( [ x['playlist_id'] for x in self.get_playlist_details() ] ) ) + 1 )
+		
+		try:
+			client.insert_one( {
+				'playlist_id': playlist_id,
+				'playlist_title': "untitled_playlist",
+				'playlist_desc': "",
+				'playlist_creator_id': creator_id,
+				'playlist_creator_name': api.get_user( creator_id )['username'],
+				'playlist_size': 0
+			} )
+		except Exception as e:
+			print( "ERROR:", e )
+
+		return playlist_id
+
+
 	def get_playlist_details( self ):
 		return self.playlist_details

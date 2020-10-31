@@ -6,6 +6,7 @@
 	--light-pink-2: #f0e6e7;
 	--white-pink: #faf5f6;
 	--dark-pink: #e0d3d9;
+	--angry-red: #e3000f;
 }
 
 html {
@@ -21,6 +22,10 @@ body {
 
 a {
 	text-decoration: none;
+}
+
+.danger {
+	color: var( --angry-red );
 }
 
 .nav-link {

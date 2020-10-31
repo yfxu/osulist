@@ -24,12 +24,13 @@ class Playlist():
 		- provides methods to fetch data from MongoDB and format it into usable data for the website
 		- requires database > collection to be initialized
 	""" 
-	def __init__( self, cli, db, collection ):
+	def __init__( self, cli, db, collection, is_owner=False ):
 		self.client_con = cli
 		self.db = db
 		self.collection = collection
 		self.map_data = self.fetch_maps()
 		self.playlist_details = self.fetch_details()
+		self.is_owner = is_owner
 		#print( "Playlist details:", self.playlist_details )
 
 	def client( self ):
@@ -53,14 +54,14 @@ class Playlist():
 	# edit playlist details
 	def edit_details( self, title, desc ):
 		client = self.details_client()
-		client.update_one( { 'playlist_id': self.collection }, { '$set': { 'playlist_title': title } } )
-		client.update_one( { 'playlist_id': self.collection }, { '$set': { 'playlist_desc': desc } } )
+		client.update_one( { 'playlist_id': self.collection }, { '$set': { 'playlist_title': str( title ) } } )
+		client.update_one( { 'playlist_id': self.collection }, { '$set': { 'playlist_desc': str( desc ) } } )
 
 	# add map to playlist
 	# return:
 	#	 0 > successfully added beatmap
 	#	-1 > failed to add beatmap ( presumably due to bad input string )
-	def add_map( self, user_id, beatmap_str ):
+	def add_map( self, beatmap_str ):
 		# attempt to parse beatmap_id from url
 		try:
 			beatmap_id = beatmap_str.split('/')[5].strip()
@@ -78,6 +79,7 @@ class Playlist():
 			if response.upserted_id is not None:
 				client = self.details_client()
 				client.update_one( { 'playlist_id': self.collection }, { '$set': { 'playlist_size': self.get_size() + 1 } } )
+				self.playlist_details = self.fetch_details()
 				return f"successfully added { x['artist'] } - { x['title'] } [{ x['version'] }] ({ x['creator'] })"
 			else:
 				return f"{ x['artist'] } - { x['title'] } [{ x['version'] }] ({ x['creator'] }) already exists in the playlist"
@@ -116,18 +118,22 @@ class Playlist():
 			'title': 'BPM'
 		}, {
 			'data': 'sr',
-			'title': 'SR'
+			'title': 'SR',
+			'searchable': False
 		}, {
 			'data': 'length',
-			'title': 'Length'
+			'title': 'Length',
+			'searchable': False
 		}, {
 			'data': 'cs',
 			'title': 'CS',
-			'visible': False
+			'visible': False,
+			'searchable': False
 		}, {
 			'data': 'ar',
 			'title': 'AR',
-			'visible': False
+			'visible': False,
+			'searchable': False
 		}, {
 			'data': 'tags',
 			'title': 'Tags',
@@ -135,21 +141,26 @@ class Playlist():
 		}, {
 			'data': 'mirror',
 			'title': '',
-			'sortable': False
+			'sortable': False,
+			'searchable': False
 		}, {
 			'data': 'direct',
 			'title': '',
-			'sortable': False
+			'sortable': False,
+			'searchable': False
 		}, {
 			'data': 'delete',
 			'title': '',
-			'sortable': False
+			'sortable': False,
+			'searchable': False,
+			'visible': self.is_owner
 		}]
 
 	# format mongodb map data into well-formatted dict for bootstrap-tables
 	def get_rows( self ):
 		table_data = []
 		position = 1
+		playlist_creator_id = self.playlist_details[0]['playlist_creator_id']
 
 		for x in self.get_raw_map_data():
 			table_data.append({
@@ -165,7 +176,7 @@ class Playlist():
 				'tags': x['tags'],
 				'mirror': html_a_format( osu_mirror_url + x['beatmapset_id'] , "mirror" ),
 				'direct': html_a_format( osu_direct_url + x['beatmap_id'] , "direct" ),
-				'delete': html_delete_format( '/delete_map', self.collection, self.get_details()['playlist_creator_id'], x['beatmap_id'], "delete" )
+				'delete': html_delete_format( '/delete_map', self.collection, playlist_creator_id, x['beatmap_id'], "delete" )
 			})
 			position += 1
 		return table_data
@@ -183,6 +194,14 @@ class Playlist():
 	# return number of maps in playlist
 	def get_size( self ):
 		return len( self.get_raw_map_data() )
+
+	# drop a playlist from the database
+	def delete( self ):
+		client = self.client()
+		client.drop()
+
+		client = self.details_client()
+		client.delete_one( { 'playlist_id': self.collection } )
 
 	# return raw data from mongodb collection
 	def get_raw_map_data( self ):

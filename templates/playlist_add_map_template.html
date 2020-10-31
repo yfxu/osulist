@@ -3,18 +3,7 @@
     <meta name="referrer" content="origin">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="shortcut icon" href="favicon.ico">
-    
-    <!-- jQuery -->
-    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
-
-    <!-- DataTables -->
-    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.22/css/jquery.dataTables.min.css">
-    <script type="text/javascript" src="https://cdn.datatables.net/1.10.22/js/jquery.dataTables.min.js"></script>
-    <link href="https://nightly.datatables.net/responsive/css/responsive.dataTables.css?_=0733d80df58ca2854b640850303e9ae6.css" rel="stylesheet" type="text/css" />
-    <script src="https://nightly.datatables.net/responsive/js/dataTables.responsive.js?_=0733d80df58ca2854b640850303e9ae6"></script>
-
     <link href="{{ url_for('static', filename='styles/osulist-styles.css')}}" rel="stylesheet">
-
     <title>Edit: {{ pl['title'] }} | osulist</title>
   </head>
   <body>
@@ -32,8 +21,12 @@
                 </td>
                 <td class="nav-right">
                   <span class="pagetop">
-                    <a id='me' href="user?id=feiri" class="nav-link">feiri</a> |
-                    <a id='logout' href="logout?auth=d5419a765ebc93eefa92b1c5d3fb3d12326f65b9&amp;goto=news%3Fp%3D5" class="nav-link">logout</a>
+                    {% if login['logged_in'] %}
+                    <a id='me' href="https://osu.ppy.sh/users/{{ login['user_id'] }}" class="nav-link">{{ login['user_name'] }}</a> |
+                    <a id='logout' href="/logout" class="nav-link">logout</a>
+                    {% else %}
+                    <a id='login' href='/login' class="nav-link">login</a>
+                    {% endif %}
                   </span>
                 </td>
               </tr>
@@ -43,14 +36,31 @@
         <tr id="pagespace" title="" style="height:10px"></tr>
         <tr>
           <td>
+            <table border="0" cellpadding="0" cellspacing="0" class="itemlist">
+              <tr>
+                <td class="playlist-item-top">
+                  <a href="/p/{{ pl['playlist_id'] }}" class="playlist-title-link">{{ pl['playlist_title'] }}</a>
+                </td>
+              </tr>
+              <tr class="playlist-details">
+                <td class="playlist-item-bottom">
+                  created by <a href="https://osu.ppy.sh/users/{{ pl['playlist_creator_id'] }}" class="playlist-details-link">{{ pl['playlist_creator_name'] }}</a> | 
+                  {{ pl['playlist_size'] }} maps</td>
+              </tr>
+            </table>
+            <br>
+          </td>
+        </tr>
+        <tr>
+          <td>
             <table border="0" cellpadding="2" cellspacing="0" class="itemlist">
-              <form action="/p/{{ pl['id'] }}/add" method="POST">
+              <form action="/p/{{ pl['playlist_id'] }}/add" method="POST">
                 <tr>
                   <td class="playlist-item-top playlist-title-link">
                     beatmap ID or link:
                   </td>
                   <td>
-                    <input type="text" name="beatmap_str" size="50">
+                    <input type="text" name="beatmap_str" size="50" maxlength="50">
                   </td>
                 </tr>
                 <tr>

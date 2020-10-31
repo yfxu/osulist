@@ -9,6 +9,7 @@ import pymongo
 from werkzeug.exceptions import HTTPException
 from flask import Flask, url_for, session, request
 from flask import render_template, redirect
+from functools import wraps
 from random import randrange
 from dotenv import load_dotenv, find_dotenv
 
@@ -43,6 +44,49 @@ app.secret_key = APP_SECRET_KEY
 client = pymongo.MongoClient( f"mongodb+srv://{ MONGO_USER }:{ MONGO_PASSWORD }@{ MONGO_CLUSTER }.mongodb.net/?retryWrites=true&w=majority" )
 
 
+# login_required decorator
+def login_required(f):
+	@wraps(f)
+	def decorated_function(*args, **kwargs):
+		try:
+			if session['user_name'] is None:
+				return redirect( url_for( 'page_unauthorized' ) )
+		except Exception as e:
+			return redirect( url_for( 'page_unauthorized' ) )
+		return f(*args, **kwargs)
+	return decorated_function
+
+
+# check if user is owner of playlist
+def is_owner( playlist_id ):
+	pl_details = playlist.Playlist( client, playlists_db_name, playlist_id ).get_details()
+	
+	try:
+		if str( session['user_id'] ) == str( pl_details['playlist_creator_id'] ):
+			return True
+	except Exception as e:
+		print( e )
+
+	return False
+
+
+def get_login_info():
+	try:
+		return {
+			'user_name': session['user_name'],
+			'user_id': session['user_id'],
+			'logged_in': True
+		}
+	except:
+		pass
+
+	return {
+		'user_name': "",
+		'user_id': "",
+		'logged_in': False
+	}
+
+
 @app.errorhandler( HTTPException )
 def handle_exception( e ):
 	"""Return JSON instead of HTML for HTTP errors."""
@@ -65,6 +109,7 @@ def login():
 	return redirect( auth.request_auth() )
 	
 
+""" oauth2 callback for successful authentication """
 @app.route( '/callback' )
 def callback():
 	#user = oauth.osu.parse_id_token( token )
@@ -77,29 +122,196 @@ def callback():
 		user = auth.authorize( code )
 		api = osuapi.OsuapiV2( user )
 
+		me = api.get_me()
+		session['user_name'] = me['username']
+		session['user_id'] = me['id']
+
 	return redirect('/')
 
 
 """ logout user """
-"""
 @app.route( '/logout' )
+@login_required
 def logout():
-	session.pop('user', None)
-	return redirect('/')
-"""
+	session.pop( 'user_name', None )
+	session.pop( 'user_id', None )
+	return redirect( '/' )
+
+
+""" unauthorized action page """
+@app.route( '/unauthorized' )
+def page_unauthorized():
+	login = get_login_info()
+
+	return render_template(
+		"unauthorized_template.html",
+		login = login
+	)
 
 """ home page """
 @app.route( '/' )
 def page_index():
-	pls = playlist_finder.Playlist_Finder( client, playlist_details_db_name, playlist_details_collection_name )
+	login = get_login_info()
 
+	pls = playlist_finder.Playlist_Finder( client, playlist_details_db_name, playlist_details_collection_name )
 	pls_rows = pls.get_rows()
 	pls_cols = pls.get_columns()
+
+	try:
+		print( session['user_name'], session['user_id'] )
+	except Exception as e:
+		print( "it's all fucked" )
 
 	return render_template(
 		"index_template.html",
 		data = pls_rows,
-		columns = pls_cols
+		columns = pls_cols,
+		login = login
+	)
+
+
+""" delete song from playlist """
+@app.route( '/delete_map', methods = ['POST'] )
+@login_required
+def delete_map():
+	playlist_id = request.form.get( 'playlist_id' )
+	
+	if is_owner( playlist_id ):
+		user_id = request.form.get( 'user_id' )
+		beatmap_id = request.form.get( 'beatmap_id' )
+
+		pl = playlist.Playlist( client, playlists_db_name, playlist_id )
+		pl.delete_map( user_id, beatmap_id )
+		return redirect( '/p/' + playlist_id )
+	
+	else:
+		redirect( 'page_unauthorized' )
+
+""" route user to playlist add maps page or submit map add form """
+@app.route( '/p/<pl_id>/add', methods = ['GET', 'POST'] )
+@login_required
+def add_map( pl_id ):
+	login = get_login_info()
+
+	if is_owner( pl_id ):
+		pl = playlist.Playlist( client, playlists_db_name, pl_id )
+		
+		# POST method handler
+		if request.method == 'POST':
+			beatmap_str = request.form.get( 'beatmap_str' )
+			status_msg = pl.add_map( beatmap_str )
+
+		# GET method handler
+		elif request.method == 'GET':
+			status_msg = ""
+		
+		pl_data = pl.get_details()
+
+		return render_template(
+			"playlist_add_map_template.html",
+			pl = pl_data,
+			status_msg = status_msg,
+			login = login
+		)
+
+	else:
+		return redirect( 'page_unauthorized' )
+
+
+""" route user to playlist edit page or submit edit form """
+@app.route( '/p/<pl_id>/edit', methods = ['GET', 'POST'] )
+@login_required
+def edit_playlist( pl_id ):
+	login = get_login_info()
+
+	if is_owner( pl_id ):
+		# POST method handler
+		if request.method == 'POST':
+			title = request.form.get( 'title' )
+			desc = request.form.get( 'desc' ).strip()
+
+			if title.strip() == '':
+				title = "untitled playlist"
+
+			pl = playlist.Playlist( client, playlists_db_name, pl_id )
+			pl.edit_details( title, desc )
+
+			return redirect( f'/p/{ pl_id }' )
+
+		# GET method handler
+		elif request.method == 'GET':
+			pl = playlist.Playlist( client, playlists_db_name, pl_id )
+			pl_details = pl.get_details()
+
+			pl_data = {
+				'id': pl_id,
+				'title': pl_details['playlist_title'],
+				'desc': pl_details['playlist_desc']			
+			}
+
+			return render_template(
+				"playlist_edit_template.html",
+				pl = pl_data,
+				user_name = session['user_name'],
+				user_id = session['user_id'],
+				login = login
+			)
+
+	else:
+		return redirect( 'page_unauthorized' )
+
+
+""" delete a playlist """
+@app.route( '/p/<pl_id>/delete', methods = ['POST'] )
+@login_required
+def delete_playlist( pl_id ):
+	if is_owner( pl_id ):
+		if request.method == 'POST':
+			pl = playlist.Playlist( client, playlists_db_name, pl_id )
+			pl.delete()
+
+		return redirect( '/' )
+
+	else:
+		return redirect( 'page_unauthorized' )
+
+
+@app.route( '/new_playlist', methods = ['GET', 'POST'] )
+@login_required
+def new_playlist():
+	pls = playlist_finder.Playlist_Finder( client, playlist_details_db_name, playlist_details_collection_name )
+	playlist_id = pls.new_playlist( "3214844" )
+
+	return redirect( f'/p/{ playlist_id }/edit' )
+
+""" route user to playlist page """
+@app.route( '/p/<pl_id>' )
+def page_playlist( pl_id ):
+	login = get_login_info()
+	owner = is_owner( pl_id )
+
+	pl = playlist.Playlist( client, playlists_db_name, pl_id, owner )
+	pl_details = pl.get_details()
+	pl_rows = pl.get_rows()
+	pl_cols = pl.get_columns()
+
+	pl_data = {
+		'id': pl_id,
+		'duration': pl.get_duration(),
+		'size': pl.get_size(),
+		'title': pl_details['playlist_title'],
+		'creator': pl_details['playlist_creator_name'],
+		'creator_id': pl_details['playlist_creator_id'],
+		'desc': pl_details['playlist_desc']
+	}
+
+	return render_template( 
+		"playlist_template.html",
+		data = pl_rows,
+		columns = pl_cols,
+		pl = pl_data,
+		login = login,
+		owner = owner
 	)
 
 
@@ -142,100 +354,5 @@ def page_beatmap( map_id ):
 	)
 
 
-""" delete song from playlist """
-@app.route( '/delete_map', methods = ['POST'] )
-def delete_map():
-	playlist_id = request.form.get( 'playlist_id' )
-	user_id = request.form.get( 'user_id' )
-	beatmap_id = request.form.get( 'beatmap_id' )
-
-	pl = playlist.Playlist( client, playlists_db_name, playlist_id )
-	pl.delete_map( user_id, beatmap_id )
-	return redirect( '/p/' + playlist_id )
-
-
-""" route user to playlist add maps page or submit map add form """
-@app.route( '/p/<pl_id>/add', methods = ['GET', 'POST'] )
-def add_map( pl_id ):
-	# POST method handler
-	if request.method == 'POST':
-		beatmap_str = request.form.get( 'beatmap_str' )
-		user_id = "3214844"
-		pl = playlist.Playlist( client, playlists_db_name, pl_id )
-
-		status_msg = pl.add_map( user_id, beatmap_str )
-
-	# GET method handler
-	elif request.method == 'GET':
-		status_msg = ""
-	
-	pl_data = { 'id': pl_id }
-
-	return render_template(
-		"playlist_add_map_template.html",
-		pl = pl_data,
-		status_msg = status_msg
-	)
-
-
-""" route user to playlist edit page or submit edit form """
-@app.route( '/p/<pl_id>/edit', methods = ['GET', 'POST'] )
-def edit_playlist( pl_id ):
-	# POST method handler
-	if request.method == 'POST':
-		title = request.form.get( 'title' )
-		desc = request.form.get( 'desc' )
-
-		pl = playlist.Playlist( client, playlists_db_name, pl_id )
-		pl.edit_details( title, desc )
-
-		return redirect( f'/p/{ pl_id }' )
-
-	# GET method handler
-	elif request.method == 'GET':
-		pl = playlist.Playlist( client, playlists_db_name, pl_id )
-		pl_details = pl.get_details()
-
-		pl_data = {}
-		pl_data['id'] = pl_id
-		pl_data['title'] = pl_details['playlist_title']
-		pl_data['desc'] = pl_details['playlist_desc']
-
-		return render_template(
-			"playlist_edit_template.html",
-			pl = pl_data 
-		)
-
-	else:
-		return render_template(
-			"error_template.html"
-		)
-
-
-""" route user to playlist page """
-@app.route( '/p/<pl_id>' )
-def page_playlist( pl_id ):
-	pl = playlist.Playlist( client, playlists_db_name, pl_id )
-	pl_details = pl.get_details()
-	pl_rows = pl.get_rows()
-	pl_cols = pl.get_columns()
-
-	pl_data = {}
-	pl_data['id'] = pl_id
-	pl_data['duration'] = pl.get_duration()
-	pl_data['size'] = pl.get_size()
-
-	pl_data['title'] = pl_details['playlist_title']
-	pl_data['creator'] = pl_details['playlist_creator_name']
-	pl_data['creator_id'] = pl_details['playlist_creator_id']
-	pl_data['desc'] = pl_details['playlist_desc']
-
-	return render_template( 
-		"playlist_template.html",
-		data = pl_rows,
-		columns = pl_cols,
-		pl = pl_data
-	)
-
 if __name__ == '__main__':
-	app.run(debug=True, host='0.0.0.0')
+	app.run( host='0.0.0.0', port=5000, debug = True )

@@ -36,8 +36,12 @@
                 </td>
                 <td class="nav-right">
                   <span class="pagetop">
-                    <a id='me' href="user?id=feiri" class="nav-link">feiri</a> |
-                    <a id='logout' href="logout?auth=d5419a765ebc93eefa92b1c5d3fb3d12326f65b9&amp;goto=news%3Fp%3D5" class="nav-link">logout</a>
+                    {% if login['logged_in'] %}
+                    <a id='me' href="http://osu.ppy.sh/users/{{ login['user_id'] }}" class="nav-link">{{ login['user_name'] }}</a> |
+                    <a id='logout' href="/logout" class="nav-link">logout</a>
+                    {% else %}
+                    <a id='login' href='/login' class="nav-link">login</a>
+                    {% endif %}
                   </span>
                 </td>
               </tr>
@@ -57,9 +61,11 @@
                 <td class="playlist-item-bottom">
                   <a href="https://osu.ppy.sh/users/{{ pl['creator_id'] }}" class="playlist-details-link">{{ pl['creator'] }}</a> | 
                   {{ pl['size'] }} maps | 
-                  {{ pl['duration'] }} | 
-                  <a href="/p/{{ pl['id'] }}/edit" class="playlist-details-link">edit</a> | 
+                  {{ pl['duration'] }} 
+                  {% if owner %}
+                  | <a href="/p/{{ pl['id'] }}/edit" class="playlist-details-link">edit</a> | 
                   <a href="/p/{{ pl['id'] }}/add" class="playlist-details-link">add</a>
+                  {% endif %}
               	</td>
               </tr>
               <tr class="playlist-details">
