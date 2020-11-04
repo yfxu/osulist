@@ -7,6 +7,9 @@
 	--white-pink: #faf5f6;
 	--dark-pink: #e0d3d9;
 	--angry-red: #e3000f;
+
+	--normal-font: 11pt;
+	--small-font: 8pt;
 }
 
 html {
@@ -16,12 +19,16 @@ html {
 
 body {
 	font-family: "Verdana", "Geneva", sans-serif;
-	font-size: 10pt;
-	background-color: #f6eff0;
+	font-size: var( --normal-font );
+	background-color: var( --light-pink-1 );
 }
 
 a {
 	text-decoration: none;
+}
+
+.normal-text {
+	font-size: var( --normal-font );
 }
 
 .danger {
@@ -45,11 +52,11 @@ a {
 
 .footer-link {
 	color: var( --navbar-font-color );
-	font-size: 8pt;
+	font-size: var( --normal-font );
 }
 
 .pagetop {
-    font-size: 10pt;
+    font-size: var( --normal-font );
 	color: var( --navbar-font-color );
     line-height: 12px;
 }
@@ -65,17 +72,17 @@ a {
 }
 
 .playlist-title-link {
-	font-size: 10pt;
+	font-size: var( --normal-font );
 	color: var( --playlist-title-color );
 }
 
 .playlist-details {
-	font-size: 7pt;
+	font-size: var( --small-font );
 	color: var( --playlist-details-color );
 }
 
 .playlist-table td, .playlist-table th {
-	font-size: 10pt;
+	font-size: var( --normal-font );
 }
 
 table.dataTable.stripe tbody tr.odd, table.dataTable.display tbody tr.odd {
@@ -122,7 +129,7 @@ a.playlist-details-link:hover {
     padding-left: 12px;
     float: none;
     text-align: left;
-    font-size: 8pt;
+    font-size: var( --normal-font );
     line-height: 
 }
 

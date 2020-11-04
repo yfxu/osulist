@@ -13,6 +13,7 @@ OSU_TOKEN = os.getenv( 'OSU_TOKEN' )
 
 # common URLs
 osu_beatmap_url = "https://osu.ppy.sh/b/"
+osu_users_url = "https://osu.ppy.sh/u/"
 osu_mirror_url = "https://beatconnect.io/b/" # needs to be followed by beatmapset_id
 osu_direct_url = "osu://b/" # needs to be followed by beatmap_id
 osu_preview_url = "https://b.ppy.sh/preview/"
@@ -62,18 +63,27 @@ class Playlist():
 	#	 0 > successfully added beatmap
 	#	-1 > failed to add beatmap ( presumably due to bad input string )
 	def add_map( self, beatmap_str ):
+		modes = {
+			'osu': '0',
+			'taiko': '1',
+			'fruits': '2',
+			'mania': '3'
+		}
+
 		# attempt to parse beatmap_id from url
 		try:
 			beatmap_id = beatmap_str.split('/')[5].strip()
+			mode = modes[beatmap_str.split('/')[4].split('#')[1].strip()]
 		except:
 			beatmap_id = beatmap_str
+			mode = modes['osu']
 
 		api = Osuapi( OSU_TOKEN )
 		client = self.client()
 
 		# try to add the beatmap given the best interpretation of the beatmap_id
 		try:
-			x = api.get_beatmap( beatmap_id )
+			x = api.get_beatmap( beatmap_id, mode )
 			response = client.replace_one( { 'beatmap_id': beatmap_id }, x, upsert=True )
 			
 			if response.upserted_id is not None:
@@ -108,6 +118,9 @@ class Playlist():
 			'title': 'beatmap_id',
 			'visible': False
 		}, {
+			'data': 'mode',
+			'title': 'Mode'
+		}, {
 			'data': 'title',
 			'title': 'Beatmap'
 		}, {
@@ -123,16 +136,6 @@ class Playlist():
 		}, {
 			'data': 'length',
 			'title': 'Length',
-			'searchable': False
-		}, {
-			'data': 'cs',
-			'title': 'CS',
-			'visible': False,
-			'searchable': False
-		}, {
-			'data': 'ar',
-			'title': 'AR',
-			'visible': False,
 			'searchable': False
 		}, {
 			'data': 'tags',
@@ -158,6 +161,13 @@ class Playlist():
 
 	# format mongodb map data into well-formatted dict for bootstrap-tables
 	def get_rows( self ):
+		modes = {
+			'0': "std",
+			'1': "taiko",
+			'2': "catch",
+			'3': "mania"
+		}
+
 		table_data = []
 		position = 1
 		playlist_creator_id = self.playlist_details[0]['playlist_creator_id']
@@ -166,13 +176,12 @@ class Playlist():
 			table_data.append({
 				'position': position,
 				'beatmap_id': x['beatmap_id'],
+				'mode': modes[ x['mode'] ],
 				'title': html_a_format( osu_beatmap_url + x['beatmap_id'] , f"{x['artist']} - {x['title']} [{x['version']}]" ),
-				'creator': x['creator'],
+				'creator': html_a_format( osu_users_url + x['creator_id'], x['creator'] ),
 				'bpm': round( float( x['bpm'] ) ),
 				'sr': f"{round( float(x['difficultyrating']), 2)}&nbsp;&#9733;",
 				'length': f"{time_format_num( x['total_length'] )} ({time_format_num( x['hit_length'] )})",
-				'cs': x['diff_size'],
-				'ar': x['diff_approach'],
 				'tags': x['tags'],
 				'mirror': html_a_format( osu_mirror_url + x['beatmapset_id'] , "mirror" ),
 				'direct': html_a_format( osu_direct_url + x['beatmap_id'] , "direct" ),

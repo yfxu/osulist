@@ -14,7 +14,7 @@ class Auth():
 	def __init__( self ):
 		self.client_id = OSU_CLIENT_ID
 		self.client_secret = OSU_CLIENT_SECRET
-		self.redirect_uri = 'http://localhost:5000/callback'
+		self.redirect_uri = 'http://localhost:5000/callback' #'http://localhost:5000/callback'
 		self.response_type = 'code'
 		self.scope = 'identify public'
 		self.state = OAUTH_STATE

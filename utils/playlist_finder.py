@@ -34,6 +34,9 @@ class Playlist_Finder():
 		data = client.find()
 		return list( data )
 
+	def global_counters_client( self ):
+		return self.client_con[self.db]['global_counters']
+
 	# get columns for display in home page
 	def get_columns( self ):
 		return [{
@@ -66,25 +69,54 @@ class Playlist_Finder():
 			})
 		return table_data
 
+	def get_user_playlists( self, user_id ):
+		table_data = []
+		for pl in self.get_playlist_details():
+			if pl['playlist_creator_id'] == user_id:
+				table_data.insert( 0, {
+					'playlist_id': pl['playlist_id'],
+					'playlist_title': pl['playlist_title'],
+					'playlist_creator_name': pl['playlist_creator_name'],
+					'playlist_creator_id': pl['playlist_creator_id'],
+					'playlist_size': pl['playlist_size']
+				})
+		return table_data
+
+	def get_non_empty_playlists( self ):
+		table_data = []
+		for pl in self.get_playlist_details():
+			if pl['playlist_size'] != 0:
+				table_data.insert( 0, {
+					'playlist_id': pl['playlist_id'],
+					'playlist_title': pl['playlist_title'],
+					'playlist_creator_name': pl['playlist_creator_name'],
+					'playlist_creator_id': pl['playlist_creator_id'],
+					'playlist_size': pl['playlist_size']
+				})
+		return table_data
+
+
 	# insert new playlist
 	def new_playlist( self, creator_id ):
-		client = self.client()
 		api = Osuapi( OSU_TOKEN )
+		playlist_id = ""
 
-		playlist_id = str( int( max( [ x['playlist_id'] for x in self.get_playlist_details() ] ) ) + 1 )
+		with self.client_con.start_session() as sess:
+			with sess.start_transaction():
+				client = self.client()
+				client2 = self.global_counters_client()
+
+				client2.update_one( {}, { '$inc': { 'global_id': 1 } }, session = sess )
+				playlist_id = str( client2.find_one( session = sess )['global_id'] )
+				client.insert_one( {
+					'playlist_id': playlist_id,
+					'playlist_title': "untitled_playlist",
+					'playlist_desc': "",
+					'playlist_creator_id': str( creator_id ),
+					'playlist_creator_name': api.get_user( creator_id )['username'],
+					'playlist_size': 0
+				}, session = sess )
 		
-		try:
-			client.insert_one( {
-				'playlist_id': playlist_id,
-				'playlist_title': "untitled_playlist",
-				'playlist_desc': "",
-				'playlist_creator_id': creator_id,
-				'playlist_creator_name': api.get_user( creator_id )['username'],
-				'playlist_size': 0
-			} )
-		except Exception as e:
-			print( "ERROR:", e )
-
 		return playlist_id
 
 

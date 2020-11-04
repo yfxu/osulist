@@ -21,33 +21,10 @@
 
     <title>{{ pl['title'] }} | osulist</title>
   </head>
-  <body>
+  <body style="max-width: 1920px; margin: auto;">
     <center>
       <table id="olmain" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#f6eff0" style="background-color: #f6eff0">
-        <tr>
-          <td bgcolor="#ff006f">
-            <table border="0" cellpadding="0" cellspacing="0" width="100%" style="padding:2px">
-              <tr class="">
-                <td class="nav-left">
-                  <span class="pagetop">
-                    <b><a href="/" class="nav-link">osulist</a></b>&nbsp;
-                    <a href="/" class="nav-link">about</a>
-                  </span>
-                </td>
-                <td class="nav-right">
-                  <span class="pagetop">
-                    {% if login['logged_in'] %}
-                    <a id='me' href="http://osu.ppy.sh/users/{{ login['user_id'] }}" class="nav-link">{{ login['user_name'] }}</a> |
-                    <a id='logout' href="/logout" class="nav-link">logout</a>
-                    {% else %}
-                    <a id='login' href='/login' class="nav-link">login</a>
-                    {% endif %}
-                  </span>
-                </td>
-              </tr>
-            </table>
-          </td>
-        </tr>
+        {% include 'common/navbar.html' %}
         <tr id="pagespace" title="" style="height:10px"></tr>
         <tr>
           <td>
@@ -59,7 +36,7 @@
               </tr>
               <tr class="playlist-details">
                 <td class="playlist-item-bottom">
-                  <a href="https://osu.ppy.sh/users/{{ pl['creator_id'] }}" class="playlist-details-link">{{ pl['creator'] }}</a> | 
+                  <a href="/u/{{ pl['creator_id'] }}" class="playlist-details-link">{{ pl['creator'] }}</a> | 
                   {{ pl['size'] }} maps | 
                   {{ pl['duration'] }} 
                   {% if owner %}
@@ -81,23 +58,7 @@
             <br>
           </td>
         </tr>
-        <tr>
-          <td>
-            <table width="100%" cellspacing="0" cellpadding="1">
-              <tr>
-                <td bgcolor="#ff006f"></td>
-              </tr>
-            </table>
-            <br>
-            <center>
-              <span class="yclinks footer-link">
-                <a href="https://github.com/yfxu/osulist" class="footer-link">source</a>
-                | <a href="https://discord.gg/Gy5uHsq" class="footer-link">discord</a>
-              </span>
-              <br><br>
-            </center>
-          </td>
-        </tr>
+        {% include 'common/footer.html' %}
       </table>
     </center>
   </body>

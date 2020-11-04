@@ -87,30 +87,30 @@ def get_login_info():
 	}
 
 
+""" error handler """
 @app.errorhandler( HTTPException )
 def handle_exception( e ):
-	"""Return JSON instead of HTML for HTTP errors."""
-	# start with the correct headers and status code from the error
-	response = e.get_response()
-	# replace the body with JSON
-	response.data = json.dumps( {
-		"code": e.code,
-		"name": e.name,
-		"description": e.description,
-	} )
-	response.content_type = "application/json"
-	return response
+	login = get_login_info()
+
+	return render_template(
+		"error_template.html",
+		login = login,
+		error = {
+			'code': e.code,
+			'name': e.name
+		}
+	)
 
 
 """ authorize osu! apiv2 using OAuth2 """
-@app.route( '/login', methods = ['GET'] )
+@app.route( '/login/', methods = ['GET'] )
 def login():
 	auth = osuauth.Auth()
 	return redirect( auth.request_auth() )
 	
 
 """ oauth2 callback for successful authentication """
-@app.route( '/callback' )
+@app.route( '/callback/' )
 def callback():
 	#user = oauth.osu.parse_id_token( token )
 	#print( user )
@@ -123,14 +123,14 @@ def callback():
 		api = osuapi.OsuapiV2( user )
 
 		me = api.get_me()
-		session['user_name'] = me['username']
-		session['user_id'] = me['id']
+		session['user_name'] = str( me['username'] )
+		session['user_id'] = str( me['id'] )
 
 	return redirect('/')
 
 
 """ logout user """
-@app.route( '/logout' )
+@app.route( '/logout/' )
 @login_required
 def logout():
 	session.pop( 'user_name', None )
@@ -139,7 +139,7 @@ def logout():
 
 
 """ unauthorized action page """
-@app.route( '/unauthorized' )
+@app.route( '/unauthorized/' )
 def page_unauthorized():
 	login = get_login_info()
 
@@ -154,24 +154,28 @@ def page_index():
 	login = get_login_info()
 
 	pls = playlist_finder.Playlist_Finder( client, playlist_details_db_name, playlist_details_collection_name )
-	pls_rows = pls.get_rows()
-	pls_cols = pls.get_columns()
-
-	try:
-		print( session['user_name'], session['user_id'] )
-	except Exception as e:
-		print( "it's all fucked" )
+	pls_rows = pls.get_non_empty_playlists()
 
 	return render_template(
 		"index_template.html",
 		data = pls_rows,
-		columns = pls_cols,
+		login = login
+	)
+
+
+""" about page """
+@app.route( '/about/' )
+def page_about():
+	login = get_login_info()
+
+	return render_template(
+		"about_template.html",
 		login = login
 	)
 
 
 """ delete song from playlist """
-@app.route( '/delete_map', methods = ['POST'] )
+@app.route( '/delete_map/', methods = ['POST'] )
 @login_required
 def delete_map():
 	playlist_id = request.form.get( 'playlist_id' )
@@ -185,10 +189,10 @@ def delete_map():
 		return redirect( '/p/' + playlist_id )
 	
 	else:
-		redirect( 'page_unauthorized' )
+		redirect( '/unauthorized/' )
 
 """ route user to playlist add maps page or submit map add form """
-@app.route( '/p/<pl_id>/add', methods = ['GET', 'POST'] )
+@app.route( '/p/<pl_id>/add/', methods = ['GET', 'POST'] )
 @login_required
 def add_map( pl_id ):
 	login = get_login_info()
@@ -215,11 +219,11 @@ def add_map( pl_id ):
 		)
 
 	else:
-		return redirect( 'page_unauthorized' )
+		return redirect( '/unauthorized/' )
 
 
 """ route user to playlist edit page or submit edit form """
-@app.route( '/p/<pl_id>/edit', methods = ['GET', 'POST'] )
+@app.route( '/p/<pl_id>/edit/', methods = ['GET', 'POST'] )
 @login_required
 def edit_playlist( pl_id ):
 	login = get_login_info()
@@ -236,7 +240,7 @@ def edit_playlist( pl_id ):
 			pl = playlist.Playlist( client, playlists_db_name, pl_id )
 			pl.edit_details( title, desc )
 
-			return redirect( f'/p/{ pl_id }' )
+			return redirect( f'/p/{ pl_id }/' )
 
 		# GET method handler
 		elif request.method == 'GET':
@@ -258,11 +262,11 @@ def edit_playlist( pl_id ):
 			)
 
 	else:
-		return redirect( 'page_unauthorized' )
+		return redirect( '/unauthorized/' )
 
 
 """ delete a playlist """
-@app.route( '/p/<pl_id>/delete', methods = ['POST'] )
+@app.route( '/p/<pl_id>/delete/', methods = ['POST'] )
 @login_required
 def delete_playlist( pl_id ):
 	if is_owner( pl_id ):
@@ -273,19 +277,19 @@ def delete_playlist( pl_id ):
 		return redirect( '/' )
 
 	else:
-		return redirect( 'page_unauthorized' )
+		return redirect( '/unauthorized/' )
 
 
-@app.route( '/new_playlist', methods = ['GET', 'POST'] )
+@app.route( '/new_playlist/', methods = ['GET', 'POST'] )
 @login_required
 def new_playlist():
 	pls = playlist_finder.Playlist_Finder( client, playlist_details_db_name, playlist_details_collection_name )
-	playlist_id = pls.new_playlist( "3214844" )
+	playlist_id = pls.new_playlist( session['user_id'] )
 
-	return redirect( f'/p/{ playlist_id }/edit' )
+	return redirect( f'/p/{ playlist_id }/edit/' )
 
 """ route user to playlist page """
-@app.route( '/p/<pl_id>' )
+@app.route( '/p/<pl_id>/' )
 def page_playlist( pl_id ):
 	login = get_login_info()
 	owner = is_owner( pl_id )
@@ -315,8 +319,29 @@ def page_playlist( pl_id ):
 	)
 
 
+""" route user to userpage """
+@app.route( '/u/<u_id>/' )
+def page_profile( u_id ):
+	login = get_login_info()
+	pls = playlist_finder.Playlist_Finder( client, playlist_details_db_name, playlist_details_collection_name )
+	api = osuapi.Osuapi( OSU_TOKEN )
+
+	pl_data = pls.get_user_playlists( u_id )
+	num_playlists = len( pl_data )
+	display_name = api.get_user( u_id )['username']
+
+	return render_template(
+		"profile_template.html",
+		data = pl_data,
+		display_name = display_name,
+		user_id = u_id,
+		num_playlists = num_playlists,
+		login = login
+	)
+
+
 """ route user to beatmap page """
-@app.route( '/b/<map_id>' )
+@app.route( '/b/<map_id>/' )
 def page_beatmap( map_id ):
 	user = session.get('user')
 
@@ -355,4 +380,4 @@ def page_beatmap( map_id ):
 
 
 if __name__ == '__main__':
-	app.run( host='0.0.0.0', port=5000, debug = True )
+	app.run( host='0.0.0.0', port=5000, debug = False )

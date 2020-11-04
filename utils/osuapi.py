@@ -10,7 +10,7 @@ class Osuapi():
 		self.key = key
 		self.url = API_BASE_URL
 		
-	def get_beatmap( self, beatmap_id ):
+	def get_beatmap( self, beatmap_id, mode='0' ):
 		params = { 'k': self.key, 'b': beatmap_id }
 		data = requests.get( self.url + '/get_beatmaps', params = params )
 		return data.json()[0]
