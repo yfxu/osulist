@@ -1,3 +1,12 @@
-- abuse protection? check for minimum playcount on user account before permitting access to use the website
-- actual usable login authentication to protect playlist operations
-- max length for playlist title and desc
+Features:
+	- ability to like/upvote playlists
+	- sort playlists by new/top
+	- search for playlists
+	- ? beatmap page ?
+	- group playlists
+	- add entire beatmapset
+
+Improvements:
+	- better UI
+		- clearer login button
+		- get a logo

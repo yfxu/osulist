@@ -7,14 +7,14 @@ load_dotenv( find_dotenv() )
 OSU_CLIENT_ID = os.getenv( 'OSU_CLIENT_ID' )
 OSU_CLIENT_SECRET = os.getenv( 'OSU_CLIENT_SECRET' )
 OAUTH_STATE = os.getenv( 'OAUTH_STATE' )
-
+BASE_URL = os.getenv( 'BASE_URL' )
 
 class Auth():
 	""" class for osu authentication """
 	def __init__( self ):
 		self.client_id = OSU_CLIENT_ID
 		self.client_secret = OSU_CLIENT_SECRET
-		self.redirect_uri = 'http://localhost:5000/callback' #'http://localhost:5000/callback'
+		self.redirect_uri = f'http://{ BASE_URL }/callback' #'http://localhost:5000/callback'
 		self.response_type = 'code'
 		self.scope = 'identify public'
 		self.state = OAUTH_STATE

@@ -6,6 +6,7 @@
 	--light-pink-2: #f0e6e7;
 	--white-pink: #faf5f6;
 	--dark-pink: #e0d3d9;
+	--bright-pink: #ff006f;
 	--angry-red: #e3000f;
 
 	--normal-font: 11pt;
@@ -29,6 +30,10 @@ a {
 
 .normal-text {
 	font-size: var( --normal-font );
+}
+
+.a-text {
+	color: var( --bright-pink );
 }
 
 .danger {
@@ -85,6 +90,10 @@ a {
 	font-size: var( --normal-font );
 }
 
+table.dataTable.compact tbody th, table.dataTable.compact tbody td {
+    padding: 7px;
+}
+
 table.dataTable.stripe tbody tr.odd, table.dataTable.display tbody tr.odd {
     background-color: var( --light-pink-1 );
 }
@@ -108,9 +117,8 @@ table.dataTable.display tbody tr.even:hover > .sorting_1, table.dataTable.order-
     background-color: var( --dark-pink );
 }
 
-
 table.dataTable tbody tr td a {
-	color: #ff006f;
+	color: var( --bright-pink );
 }
 
 table.dataTable.row-border tbody th, table.dataTable.row-border tbody td, table.dataTable.display tbody th, table.dataTable.display tbody td {

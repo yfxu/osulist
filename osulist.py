@@ -231,10 +231,10 @@ def edit_playlist( pl_id ):
 	if is_owner( pl_id ):
 		# POST method handler
 		if request.method == 'POST':
-			title = request.form.get( 'title' )
-			desc = request.form.get( 'desc' ).strip()
+			title = request.form.get( 'title' ).strip()[:50]
+			desc = request.form.get( 'desc' ).strip()[:500]
 
-			if title.strip() == '':
+			if title == '':
 				title = "untitled playlist"
 
 			pl = playlist.Playlist( client, playlists_db_name, pl_id )
