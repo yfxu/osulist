@@ -7,7 +7,7 @@ import utils.osuauth as osuauth
 import requests
 import pymongo
 from werkzeug.exceptions import HTTPException
-from flask import Flask, url_for, session, request
+from flask import Flask, url_for, session, request, abort
 from flask import render_template, redirect
 from functools import wraps
 from random import randrange
@@ -41,8 +41,13 @@ app.secret_key = APP_SECRET_KEY
 
 
 # connect to MongoDB
-client = pymongo.MongoClient( f"mongodb+srv://{ MONGO_USER }:{ MONGO_PASSWORD }@{ MONGO_CLUSTER }.mongodb.net/?retryWrites=true&w=majority" )
-
+host = MONGO_CLUSTER
+# don't put the MONGO_USER and MONGO_PASSWORD part if there are none, an
+# empty user is considered invalid but an unauthenticated user is not.
+if MONGO_USER is not None and MONGO_PASSWORD is not None:
+	host = f"{MONGO_USER}:{MONGO_PASSWORD}@{HOST}"
+mongo_uri = f"mongodb://{host}/?retryWrites=true&w=majority"
+client = pymongo.MongoClient(mongo_uri)
 
 # login_required decorator
 def login_required(f):
@@ -292,12 +297,15 @@ def new_playlist():
 @app.route( '/p/<pl_id>/' )
 def page_playlist( pl_id ):
 	login = get_login_info()
-	owner = is_owner( pl_id )
+	try:
+		owner = is_owner( pl_id )
 
-	pl = playlist.Playlist( client, playlists_db_name, pl_id, owner )
-	pl_details = pl.get_details()
-	pl_rows = pl.get_rows()
-	pl_cols = pl.get_columns()
+		pl = playlist.Playlist( client, playlists_db_name, pl_id, owner )
+		pl_details = pl.get_details()
+		pl_rows = pl.get_rows()
+		pl_cols = pl.get_columns()
+	except IndexError:
+		return abort(404)
 
 	pl_data = {
 		'id': pl_id,
