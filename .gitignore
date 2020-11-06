@@ -130,3 +130,7 @@ dmypy.json
 
 # databases
 *.db
+
+# add-ons
+*.sock
+osulistenv/
