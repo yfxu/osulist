@@ -23,10 +23,7 @@ OSU_CLIENT_ID = os.getenv( 'OSU_CLIENT_ID' )
 OSU_CLIENT_SECRET = os.getenv( 'OSU_CLIENT_SECRET' )
 OAUTH_STATE = os.getenv( 'OAUTH_STATE' )
 
-MONGO_USER = os.getenv( 'MONGO_USER_PUBLIC' )
-MONGO_PASSWORD = os.getenv( 'MONGO_PASSWORD_PUBLIC' )
-MONGO_CLUSTER = os.getenv( 'MONGO_CLUSTER' )
-
+mongo_uri = os.getenv("MONGO_URI")
 
 # constants
 playlists_db_name = 'playlists'
@@ -41,12 +38,6 @@ app.secret_key = APP_SECRET_KEY
 
 
 # connect to MongoDB
-host = MONGO_CLUSTER
-# don't put the MONGO_USER and MONGO_PASSWORD part if there are none, an
-# empty user is considered invalid but an unauthenticated user is not.
-if MONGO_USER is not None and MONGO_PASSWORD is not None:
-	host = f"{MONGO_USER}:{MONGO_PASSWORD}@{HOST}"
-mongo_uri = f"mongodb://{host}/?retryWrites=true&w=majority"
 client = pymongo.MongoClient(mongo_uri)
 
 # login_required decorator
