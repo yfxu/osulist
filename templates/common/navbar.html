@@ -1,23 +1,21 @@
-<tr>
-  <td bgcolor="#ff006f">
-    <table border="0" cellpadding="0" cellspacing="0" width="100%" style="padding:2px">
-      <tr class="">
+<tr class="nav-bar">
+  <td>
+    <table border="0" cellpadding="5" cellspacing="5" width="100%" style="padding:2px">
+      <tr>
         <td class="nav-left">
           <span class="pagetop">
             <b><a href="/" class="nav-link">osulist</a></b>&nbsp;
             <a href="/about" class="nav-link">about</a>
-            {% if login['logged_in'] %}
-            | <a href="/new_playlist" class="nav-link">new playlist</a>
-            {% endif %}
           </span>
         </td>
         <td class="nav-right">
           <span class="pagetop">
             {% if login['logged_in'] %}
+            <a href="/new_playlist" class="navbar-button">new playlist</a>&nbsp;&nbsp;
             <a id='me' href="/u/{{ login['user_id'] }}" class="nav-link">{{ login['user_name'] }}</a> |
             <a id='logout' href="/logout" class="nav-link">logout</a>
             {% else %}
-            <a id='login' href='/login' class="nav-link">login</a>
+            <b><a id='login' href='/login' class="login-button">login</a></b>
             {% endif %}
           </span>
         </td>

@@ -7,22 +7,26 @@
 
     <title>unauthorized | osulist</title>
   </head>
-  <body style="max-width: 900px; margin: auto;">
+  <body style="max-width: 1440px; margin: auto;">
     <center>
-      <table id="olmain" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#f6eff0" style="background-color: #f6eff0">
+      <table id="olmain" border="0" cellpadding="0" cellspacing="0" width="100%" class="page-background">
         {% include 'common/navbar.html' %}
-        <tr id="pagespace" title="" style="height:10px"></tr>
+        <table border="0" cellpadding="4" cellspacing="0" class="itemlist" width="100%">
+          <tr>
+            <td class="page-banner playlist-item-top playlist-title-link">
+              <b>Unauthorized</b>
+            </td>
+          </tr>
+          {% include 'common/pink_line.html' %}
+        </table>
+      </table>
+      <table id="olmain" border="0" cellpadding="0" cellspacing="0" width="100%" class="page-background">
         <tr>
           <td>
             <table border="0" cellpadding="0" cellspacing="0" class="itemlist">
               <tr>
                 <td class="playlist-item-top normal-text">
-                  Unauthorized
-                </td>
-              </tr>
-              <tr>
-                <td>
-                  <br>
+                  An action could not be completed because the logged-in user was not authorized to perform it.
                 </td>
               </tr>
             </table>

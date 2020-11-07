@@ -6,26 +6,31 @@
     <link href="{{ url_for('static', filename='styles/osulist-styles.css')}}" rel="stylesheet">
     <title>add: {{ pl['title'] }} | osulist</title>
   </head>
-  <body style="max-width: 900px; margin: auto;">
+  <body style="max-width: 1440px; margin: auto;">
     <center>
       <table id="olmain" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#f6eff0" style="background-color: #f6eff0">
         {% include 'common/navbar.html' %}
-        <tr id="pagespace" title="" style="height:10px"></tr>
+        <table border="0" cellpadding="4" cellspacing="0" class="itemlist" width="100%">
+          <tr>
+            <td class="page-banner playlist-item-top playlist-title-link">
+              <b>adding: {{ pl['playlist_title'] }}</b> 
+              | {{ pl['playlist_size'] }} maps
+            </td>
+          </tr>
+          {% include 'common/pink_line.html' %}
+        </table>
+      </table>
+      <table id="olmain" border="0" cellpadding="0" cellspacing="0" width="100%" class="page-background">
         <tr>
           <td>
             <table border="0" cellpadding="0" cellspacing="0" class="itemlist">
               <tr>
-                <td class="playlist-item-top">
-                  <a href="/p/{{ pl['playlist_id'] }}" class="playlist-title-link">{{ pl['playlist_title'] }}</a>
+                <td class="playlist-item-top playlist-details">
+                  <a href="/p/{{ pl['playlist_id'] }}" class="playlist-details-link">{{ pl['playlist_title'] }}</a>
+                  &nbsp;>&nbsp;<a href="/p/{{ pl['playlist_id'] }}/add" class="playlist-details-link">add</a>
                 </td>
               </tr>
-              <tr class="playlist-details">
-                <td class="playlist-item-bottom">
-                  created by <a href="https://osu.ppy.sh/users/{{ pl['playlist_creator_id'] }}" class="playlist-details-link">{{ pl['playlist_creator_name'] }}</a> | 
-                  {{ pl['playlist_size'] }} maps</td>
-              </tr>
             </table>
-            <br>
           </td>
         </tr>
         <tr>
@@ -51,12 +56,8 @@
                 <td>&nbsp;</td>
                 <td class="playlist-item-top playlist-title-link">{{ status_msg }}</td>
               </tr>
-              <tr>
-                <td><br></td>
-              </tr>
               <table id="playlist-table" class="playlist-table display compact" style="width: 99%"></table>
             </table>
-            <br>
           </td>
         </tr>
         {% include 'common/footer.html' %}
