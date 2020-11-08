@@ -6,54 +6,53 @@
     <link href="{{ url_for('static', filename='styles/osulist-styles.css')}}" rel="stylesheet">
     <title>{{ display_name }}'s profile | osulist</title>
   </head>
-  <body style="max-width: 900px; margin: auto;">
+  <body style="max-width: 1440px; margin: auto;">
     <center>
-      <table id="olmain" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#f6eff0" style="background-color: #f6eff0">
+      <table id="olmain" border="0" cellpadding="0" cellspacing="0" width="100%" class="page-background">
         {% include 'common/navbar.html' %}
-        <tr id="pagespace" title="" style="height:10px"></tr>
+        <table border="0" cellpadding="4" cellspacing="0" class="itemlist" width="100%">
+          <tr>
+            <td class="page-banner playlist-item-top playlist-title-link banner-left">
+              <span>
+                <b>{{ display_name }}'s profile</b>
+                | {{ num_playlists }} playlists</b>
+              </span>
+            </td>
+            <td class="page-banner playlist-item-top playlist-title-link banner-right">
+              <span>
+                <a href="https://osu.ppy.sh/users/{{ user_id }}" class="banner-link">osu! userpage</a>
+              </span>
+            </td>
+          </tr>
+          {% include 'common/pink_line.html' %}
+        </table>
+      </table>
+      <table id="olmain" border="0" cellpadding="0" cellspacing="0" width="100%" class="page-background">
         <tr>
           <td>
-            <table border="0" cellpadding="2" cellspacing="0" class="itemlist">
-              <tr>
-                <td class="playlist-item-top playlist-title-link">
-                  user:
-                </td>
-                <td class="playlist-item-top playlist-title-link">
-                  <a href="https://osu.ppy.sh/users/{{ user_id }}" class="playlist-title-link">{{ display_name }}</a>
-                </td>
-              </tr>
-              <tr>
-                <td class="playlist-item-top playlist-title-link">
-                  no. of playlists:
-                </td>
-                <td class="playlist-item-top playlist-title-link">
-                  {{ num_playlists }}
-                </td>
-              </tr>
-              <tr>
-                <td class="playlist-item-top playlist-title-link" style="vertical-align: top;">
-                  playlists:
-                </td>
-                <td>
-                  <table border="0" cellpadding="2" cellspacing="0" class="itemlist">
-                    {% for x in data %}
-                    <tr>
-                      <td class="playlist-item-top">
-                        <a href="/p/{{ x['playlist_id'] }}" class="playlist-title-link">{{ x['playlist_title'] }}</a>
-                      </td>
-                    </tr>
-                    <tr class="playlist-details">
-                      <td class="playlist-item-bottom">
-                        created by <a href="/u/{{ x['playlist_creator_id'] }}" class="playlist-details-link">{{ x['playlist_creator_name'] }}</a> | 
-                        {{ x['playlist_size'] }} maps</td>
-                    </tr>
-                    {% endfor %}
-                  </table>
-                </td>
-              </tr>
+            <table border="0" cellpadding="4" cellspacing="0" class="itemlist" width="100%">
+              <table border="0" cellpadding="0" cellspacing="0" class="itemlist" width="100%">
+                {% for x in data %}
+                <tr class="index-row-{{ loop.cycle( 'even', 'odd' ) }}">
+                  <td class="playlist-item-top">
+                    <a href="/p/{{ x['playlist_id'] }}" class="playlist-title-link">{{ x['playlist_title'] }}</a>
+                  </td>
+                </tr>
+                <tr class="playlist-details index-row-{{ loop.cycle( 'even', 'odd' ) }}">
+                  <td class="playlist-item-bottom">
+                    created by <a href="/u/{{ x['playlist_creator_id'] }}" class="playlist-details-link">{{ x['playlist_creator_name'] }}</a> | 
+                    {{ x['playlist_size'] }} maps |
+                    <a href="/p/{{ x['playlist_id'] }}" class="playlist-details-link">permalink</a>
+                    {% if x['playlist_creator_id'] == login['user_id'] %}
+                    | <a href="/p/{{ x['playlist_id'] }}/edit/" class="playlist-details-link">edit</a>
+                    | <a href="/p/{{ x['playlist_id'] }}/add/" class="playlist-details-link">add</a>
+                    {% endif %}
+                  </td>
+                </tr>
+                {% endfor %}
+              </table>
               <table id="playlist-table" class="playlist-table display compact" style="width: 99%"></table>
             </table>
-            <br>
           </td>
         </tr>
         {% include 'common/footer.html' %}

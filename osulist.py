@@ -227,7 +227,7 @@ def edit_playlist( pl_id ):
 	if is_owner( pl_id ):
 		# POST method handler
 		if request.method == 'POST':
-			title = request.form.get( 'title' ).strip()[:50]
+			title = request.form.get( 'title' ).strip()[:75]
 			desc = request.form.get( 'desc' ).strip()[:500]
 
 			if title == '':
@@ -322,6 +322,7 @@ def page_playlist( pl_id ):
 @app.route( '/u/<u_id>/' )
 def page_profile( u_id ):
 	login = get_login_info()
+
 	pls = playlist_finder.Playlist_Finder( client, playlist_details_db_name, playlist_details_collection_name )
 	api = osuapi.Osuapi( OSU_TOKEN )
 
@@ -379,4 +380,4 @@ def page_beatmap( map_id ):
 
 
 if __name__ == '__main__':
-	app.run( host='0.0.0.0', port=5000, debug = False )
+	app.run( host='0.0.0.0', port=5000, debug=False )

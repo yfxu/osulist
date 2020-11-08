@@ -7,33 +7,42 @@
 
     <title>about | osulist</title>
   </head>
-  <body style="max-width: 900px; margin: auto;">
+  <body style="max-width: 1440px; margin: auto;">
     <center>
-      <table id="olmain" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#f6eff0" style="background-color: #f6eff0">
+      <table id="olmain" border="0" cellpadding="0" cellspacing="0" width="100%" class="page-background">
         {% include 'common/navbar.html' %}
-        <tr id="pagespace" title="" style="height:10px"></tr>
+        <table border="0" cellpadding="4" cellspacing="0" class="itemlist" width="100%">
+          <tr>
+            <td class="page-banner playlist-item-top playlist-title-link">
+              <b>about</b>
+            </td>
+          </tr>
+          {% include 'common/pink_line.html' %}
+        </table>
+      </table>
+      <table id="olmain" border="0" cellpadding="0" cellspacing="0" width="100%" class="page-background">
         <tr>
           <td>
             <table border="0" cellpadding="0" cellspacing="0" class="itemlist">
               <tr>
-                <td class="playlist-item-top normal-text">
-                  osulist is an online web application that lets you easily create and share playlists of individual osu! beatmap difficulties. If you have any bugs you would like to report, or if you would like to help contribute to the development of osulist, join our <a href="https://discord.gg/Gy5uHsq" class="a-text">Discord server</a>!
-                </td>
-              </tr>
-              <tr><td><br></td></tr>
-              <tr>
-                <td class="playlist-item-top normal-text">
-                  To create a new playlist, login using the 'login' button on the top right of the website. Once logged in, click on 'new playlist' on the navigation bar.
+                <td class="playlist-item-top normal-text medium-line-spacing">
+                  osulist is an online web application that lets you easily create and share playlists of osu! beatmaps. To create a new playlist, login using the 'login' button on the top right of the website. Once logged in, click on 'new playlist' on the navigation bar.
                 </td>
               </tr>
               <tr>
-                <td class="playlist-item-top normal-text">
-                  osulist was developed by <a href="https://twitter.com/yi_feiri" class="a-text">Feiri</a>! :D
+                <td class="playlist-item-top normal-text medium-line-spacing">
+                  Consider joining our <a href="https://discord.gg/Gy5uHsq" class="a-text">Discord server</a> if you would like to participate in anything development-related.
+                  <ul>
+                    <li>bug reports</li>
+                    <li>feature requests</li>
+                    <li>development discussions</li>
+                    <li>design</li>
+                  </ul>
                 </td>
               </tr>
               <tr>
-                <td>
-                  <br>
+                <td class="playlist-item-top normal-text medium-line-spacing">
+                  osulist was developed by <a href="https://twitter.com/yi_feiri" class="a-text">Feiri</a> and other cool, lovable contributors! :D
                 </td>
               </tr>
             </table>

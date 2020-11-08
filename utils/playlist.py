@@ -181,7 +181,7 @@ class Playlist():
 				'creator': html_a_format( osu_users_url + x['creator_id'], x['creator'] ),
 				'bpm': round( float( x['bpm'] ) ),
 				'sr': f"{round( float(x['difficultyrating']), 2)}&nbsp;&#9733;",
-				'length': f"{time_format_num( x['total_length'] )} ({time_format_num( x['hit_length'] )})",
+				'length': f"{time_format_num( x['total_length'] )}&nbsp;({time_format_num( x['hit_length'] )})",
 				'tags': x['tags'],
 				'mirror': html_a_format( osu_mirror_url + x['beatmapset_id'] , "mirror" ),
 				'direct': html_a_format( osu_direct_url + x['beatmap_id'] , "direct" ),

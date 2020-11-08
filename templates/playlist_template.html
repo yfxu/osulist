@@ -21,37 +21,45 @@
 
     <title>{{ pl['title'] }} | osulist</title>
   </head>
-  <body style="max-width: 1920px; margin: auto;">
+  <body style="max-width: 1440px; margin: auto;">
     <center>
-      <table id="olmain" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#f6eff0" style="background-color: #f6eff0">
+      <table id="olmain" border="0" cellpadding="0" cellspacing="0" width="100%" class="page-background">
         {% include 'common/navbar.html' %}
-        <tr id="pagespace" title="" style="height:10px"></tr>
+        <table border="0" cellpadding="4" cellspacing="0" class="itemlist" width="100%">
+          <tr>
+            <td class="page-banner playlist-item-top playlist-title-link banner-left">
+              <span>
+                <b>{{ pl['title'] }}</b> | created by <a href="/u/{{ pl['creator_id'] }}" class="banner-link">{{ pl['creator'] }}</a>  
+              </span>
+            </td>
+            {% if owner %}
+            <td class="page-banner playlist-item-top playlist-title-link banner-right">
+              <span>
+                <a href="/p/{{ pl['id'] }}/edit" class="banner-button">edit</a>
+                <a href="/p/{{ pl['id'] }}/add" class="banner-button">add</a>
+              </span>
+            </td>
+            {% endif %}
+          </tr>
+          {% include 'common/pink_line.html' %}
+        </table>
+      </table>
+      <table border="0" cellpadding="4" cellspacing="0" class="itemlist" width="100%" class="page-background">
+        <tr>
+          <td class="playlist-item-top playlist-details"> 
+            {{ pl['size'] }} maps | {{ pl['duration'] }}
+          </td>
+        </tr>
+        <tr>
+          <td class="playlist-item-bottom playlist-details">
+            {{ pl['desc'] }}
+          </td>
+        </tr>
+      </table>
+      <table border="0" cellpadding="4" cellspacing="0" class="itemlist" width="100%" class="page-background">
         <tr>
           <td>
-            <table border="0" cellpadding="0" cellspacing="0" class="itemlist">
-              <tr>
-                <td class="playlist-item-top playlist-title-link">
-                  {{ pl['title'] }}
-                </td>
-              </tr>
-              <tr class="playlist-details">
-                <td class="playlist-item-bottom">
-                  <a href="/u/{{ pl['creator_id'] }}" class="playlist-details-link">{{ pl['creator'] }}</a> | 
-                  {{ pl['size'] }} maps | 
-                  {{ pl['duration'] }} 
-                  {% if owner %}
-                  | <a href="/p/{{ pl['id'] }}/edit" class="playlist-details-link">edit</a> | 
-                  <a href="/p/{{ pl['id'] }}/add" class="playlist-details-link">add</a>
-                  {% endif %}
-              	</td>
-              </tr>
-              <tr class="playlist-details">
-                <td class="playlist-item-bottom"> 
-                  {{ pl['desc'] }}</td>
-              </tr>
-              <tr>
-                <td><br></td>
-              </tr>
+            <table border="0" cellpadding="0" cellspacing="0" class="itemlist" width="100%">
               <iframe name="dummyframe" id="dummyframe" style="display: none;"></iframe>
               <table id="playlist-table" class="playlist-table display compact" style="width: 99%"></table>
             </table>

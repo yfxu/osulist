@@ -6,11 +6,32 @@
     <link href="{{ url_for('static', filename='styles/osulist-styles.css')}}" rel="stylesheet">
     <title>edit: {{ pl['title'] }} | osulist</title>
   </head>
-  <body style="max-width: 900px; margin: auto;">
+  <body style="max-width: 1440px; margin: auto;">
     <center>
-      <table id="olmain" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#f6eff0" style="background-color: #f6eff0">
+      <table id="olmain" border="0" cellpadding="0" cellspacing="0" width="100%" class="page-background">
         {% include 'common/navbar.html' %}
-        <tr id="pagespace" title="" style="height:10px"></tr>
+        <tr>
+          <td>
+            <table border="0" cellpadding="4" cellspacing="0" class="itemlist" width="100%">
+              <tr>
+                <td class="page-banner playlist-item-top playlist-title-link">
+                  <b>editing: {{ pl['title'] }}</b>
+                </td>
+              </tr>
+              {% include 'common/pink_line.html' %}
+            </table>
+          </td>
+        </tr>
+      </table>
+      <table id="olmain" border="0" cellpadding="0" cellspacing="0" width="100%" class="page-background">
+        <tr>
+          <td class="playlist-item-top playlist-details">
+            <a href="/p/{{ pl['id'] }}" class="playlist-details-link">{{ pl['title'] }}</a>
+            &nbsp;>&nbsp;<a href="/p/{{ pl['id'] }}/edit" class="playlist-details-link">edit</a>
+          </td>
+        </tr>
+      </table>
+      <table id="olmain" border="0" cellpadding="0" cellspacing="0" width="100%" class="page-background">
         <tr>
           <td>
             <table border="0" cellpadding="2" cellspacing="0" class="itemlist">
@@ -20,7 +41,7 @@
                     title:
                   </td>
                   <td>
-                    <input type="text" name="title" value="{{ pl['title'] }}" required minlength="1" maxlength="50">
+                    <input type="text" name="title" value="{{ pl['title'] }}" required minlength="1" maxlength="75">
                   </td>
                 </tr>
                 <tr>
