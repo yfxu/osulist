@@ -154,7 +154,28 @@ def page_index():
 
 	return render_template(
 		"index_template.html",
+		banner_text = "Welcome to osulist!",
 		data = pls_rows,
+		no_results = False,
+		login = login
+	)
+
+
+""" website search """
+@app.route( '/search/' )
+def page_search():
+	login = get_login_info()
+
+	search_string = request.args.get( 'search_string' )
+	pls = playlist_finder.Playlist_Finder( client, playlist_details_db_name, playlist_details_collection_name )
+	pls_rows = pls.get_search_playlists( search_string )
+
+	return render_template(
+		"index_template.html",
+		banner_text = "search: " + search_string,
+		search_string = search_string,
+		data = pls_rows,
+		no_results = True if pls_rows == [] else False,
 		login = login
 	)
 
@@ -302,6 +323,7 @@ def page_playlist( pl_id ):
 		'id': pl_id,
 		'duration': pl.get_duration(),
 		'size': pl.get_size(),
+		'timestamp': pl.get_timestamp(),
 		'title': pl_details['playlist_title'],
 		'creator': pl_details['playlist_creator_name'],
 		'creator_id': pl_details['playlist_creator_id'],
@@ -380,4 +402,4 @@ def page_beatmap( map_id ):
 
 
 if __name__ == '__main__':
-	app.run( host='0.0.0.0', port=5000, debug=False )
+	app.run( host='0.0.0.0', port=5000, debug=True )
