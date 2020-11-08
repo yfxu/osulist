@@ -7,7 +7,7 @@ import utils.osuauth as osuauth
 import requests
 import pymongo
 from werkzeug.exceptions import HTTPException
-from flask import Flask, url_for, session, request
+from flask import Flask, url_for, session, request, abort
 from flask import render_template, redirect
 from functools import wraps
 from random import randrange
@@ -23,10 +23,7 @@ OSU_CLIENT_ID = os.getenv( 'OSU_CLIENT_ID' )
 OSU_CLIENT_SECRET = os.getenv( 'OSU_CLIENT_SECRET' )
 OAUTH_STATE = os.getenv( 'OAUTH_STATE' )
 
-MONGO_USER = os.getenv( 'MONGO_USER_PUBLIC' )
-MONGO_PASSWORD = os.getenv( 'MONGO_PASSWORD_PUBLIC' )
-MONGO_CLUSTER = os.getenv( 'MONGO_CLUSTER' )
-
+mongo_uri = os.getenv("MONGO_URI")
 
 # constants
 playlists_db_name = 'playlists'
@@ -41,8 +38,7 @@ app.secret_key = APP_SECRET_KEY
 
 
 # connect to MongoDB
-client = pymongo.MongoClient( f"mongodb+srv://{ MONGO_USER }:{ MONGO_PASSWORD }@{ MONGO_CLUSTER }.mongodb.net/?retryWrites=true&w=majority" )
-
+client = pymongo.MongoClient(mongo_uri)
 
 # login_required decorator
 def login_required(f):
@@ -292,12 +288,15 @@ def new_playlist():
 @app.route( '/p/<pl_id>/' )
 def page_playlist( pl_id ):
 	login = get_login_info()
-	owner = is_owner( pl_id )
+	try:
+		owner = is_owner( pl_id )
 
-	pl = playlist.Playlist( client, playlists_db_name, pl_id, owner )
-	pl_details = pl.get_details()
-	pl_rows = pl.get_rows()
-	pl_cols = pl.get_columns()
+		pl = playlist.Playlist( client, playlists_db_name, pl_id, owner )
+		pl_details = pl.get_details()
+		pl_rows = pl.get_rows()
+		pl_cols = pl.get_columns()
+	except IndexError:
+		return abort(404)
 
 	pl_data = {
 		'id': pl_id,
@@ -381,4 +380,4 @@ def page_beatmap( map_id ):
 
 
 if __name__ == '__main__':
-	app.run( host='0.0.0.0', port=5000, debug=True )
+	app.run( host='0.0.0.0', port=5000, debug=False )
