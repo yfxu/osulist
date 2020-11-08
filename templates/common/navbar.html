@@ -10,6 +10,9 @@
         </td>
         <td class="nav-right">
           <span class="pagetop">
+            <form action="/search/" method="GET" class="search-form">
+              <input type="text" name="search_string" placeholder="search" class="search-bar">
+            </form>&nbsp;&nbsp;
             {% if login['logged_in'] %}
             <a href="/new_playlist" class="navbar-button">new playlist</a>&nbsp;&nbsp;
             <a id='me' href="/u/{{ login['user_id'] }}" class="nav-link">{{ login['user_name'] }}</a> |

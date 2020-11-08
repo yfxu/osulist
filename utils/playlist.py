@@ -200,6 +200,10 @@ class Playlist():
 		pl_hit_length = sum( [ int( x['hit_length'] ) for x in self.get_raw_map_data() ] )
 		return f"{time_format_str( pl_total_length )} ({time_format_str( pl_hit_length )})"
 
+	# get time of playlist creation
+	def get_timestamp( self ):
+		return self.get_details()['_id'].generation_time.date()
+
 	# return number of maps in playlist
 	def get_size( self ):
 		return len( self.get_raw_map_data() )

@@ -13,7 +13,7 @@
         <table border="0" cellpadding="4" cellspacing="0" class="itemlist" width="100%">
           <tr>
             <td class="page-banner playlist-item-top playlist-title-link">
-              <b>Welcome to osulist!</b> 
+              <b>{{ banner_text }}</b> 
               {% if not login['logged_in'] %}
               | You must be logged in to create playlists
               {% endif %}
@@ -26,6 +26,13 @@
         <tr>
           <td>
             <table border="0" cellpadding="0" cellspacing="0" class="itemlist" width="100%">
+              {% if no_results %}
+              <tr class="index-row-even">
+                <td class="playlist-item-top normal-text medium-line-spacing">
+                   no results found for "{{ search_string }}"
+                </td>
+              </tr>
+              {% endif %}
               {% for x in data %}
               <tr class="index-row-{{ loop.cycle( 'even', 'odd' ) }}">
                 <td class="playlist-item-top">
@@ -34,9 +41,10 @@
               </tr>
               <tr class="playlist-details index-row-{{ loop.cycle( 'even', 'odd' ) }}">
                 <td class="playlist-item-bottom">
-                  created by <a href="/u/{{ x['playlist_creator_id'] }}" class="playlist-details-link">{{ x['playlist_creator_name'] }}</a> | 
-                  {{ x['playlist_size'] }} maps |
-                  <a href="/p/{{ x['playlist_id'] }}" class="playlist-details-link">permalink</a>
+                  created by <a href="/u/{{ x['playlist_creator_id'] }}" class="playlist-details-link">{{ x['playlist_creator_name'] }}</a> 
+                  | {{ x['playlist_size'] }} maps 
+                  | {{ x['playlist_timestamp'] }}
+                  | <a href="/p/{{ x['playlist_id'] }}" class="playlist-details-link">permalink</a>
                   {% if x['playlist_creator_id'] == login['user_id'] %}
                   | <a href="/p/{{ x['playlist_id'] }}/edit/" class="playlist-details-link">edit</a>
                   | <a href="/p/{{ x['playlist_id'] }}/add/" class="playlist-details-link">add</a>

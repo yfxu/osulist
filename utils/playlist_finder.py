@@ -65,7 +65,8 @@ class Playlist_Finder():
 				'playlist_title': pl['playlist_title'],
 				'playlist_creator_name': pl['playlist_creator_name'],
 				'playlist_creator_id': pl['playlist_creator_id'],
-				'playlist_size': pl['playlist_size']
+				'playlist_size': pl['playlist_size'],
+				'playlist_timestamp': pl['_id'].generation_time.date()
 			})
 		return table_data
 
@@ -78,7 +79,8 @@ class Playlist_Finder():
 					'playlist_title': pl['playlist_title'],
 					'playlist_creator_name': pl['playlist_creator_name'],
 					'playlist_creator_id': pl['playlist_creator_id'],
-					'playlist_size': pl['playlist_size']
+					'playlist_size': pl['playlist_size'],
+					'playlist_timestamp': pl['_id'].generation_time.date()
 				})
 		return table_data
 
@@ -91,7 +93,33 @@ class Playlist_Finder():
 					'playlist_title': pl['playlist_title'],
 					'playlist_creator_name': pl['playlist_creator_name'],
 					'playlist_creator_id': pl['playlist_creator_id'],
-					'playlist_size': pl['playlist_size']
+					'playlist_size': pl['playlist_size'],
+					'playlist_timestamp': pl['_id'].generation_time.date()
+				})
+		return table_data
+
+	def get_search_playlists( self, search_string ):
+
+		def match_kw( str1 ):
+			str1 = str1.lower().split()
+			str2 = search_string.replace( "%20", " " ).lower().split()
+
+			for word in str1:
+				if word in str2:
+					return True
+
+			return False
+
+		table_data = []
+		for pl in self.get_playlist_details():
+			if match_kw( pl['playlist_title'] ) or match_kw( pl['playlist_creator_name'] ) or match_kw( pl['playlist_desc'] ):
+				table_data.insert( 0, {
+					'playlist_id': pl['playlist_id'],
+					'playlist_title': pl['playlist_title'],
+					'playlist_creator_name': pl['playlist_creator_name'],
+					'playlist_creator_id': pl['playlist_creator_id'],
+					'playlist_size': pl['playlist_size'],
+					'playlist_timestamp': pl['_id'].generation_time.date()
 				})
 		return table_data
 
