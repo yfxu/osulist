@@ -274,7 +274,6 @@ table.dataTable thead th, table.dataTable thead td {
 }
 
 table.dataTable thead .sorting {
-    background-image: url("../images/sort_both.png");
     color: var( --normal-font-color );
     font-weight: normal;
 }
