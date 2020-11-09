@@ -18,6 +18,7 @@ osu_mirror_url = "https://beatconnect.io/b/" # needs to be followed by beatmapse
 osu_direct_url = "osu://b/" # needs to be followed by beatmap_id
 osu_preview_url = "https://b.ppy.sh/preview/"
 
+max_playlist_size = 1000
 
 class Playlist():
 	""" class defintion for a single playlist object
@@ -63,6 +64,10 @@ class Playlist():
 	#	 0 > successfully added beatmap
 	#	-1 > failed to add beatmap ( presumably due to bad input string )
 	def add_map( self, beatmap_str ):
+		details = self.get_details()
+		if details['playlist_size'] >= max_playlist_size:
+			return f"playlist size limit of { max_playlist_size } has been reached // remove some beatmaps or create a new playlist"
+
 		modes = {
 			'osu': '0',
 			'taiko': '1',
