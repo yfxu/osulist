@@ -44,14 +44,19 @@
           {% include 'common/pink_line.html' %}
         </table>
       </table>
-      <table border="0" cellpadding="4" cellspacing="0" class="itemlist" width="100%" class="page-background">
+      <table border="0" cellpadding="0" cellspacing="0" class="itemlist" width="100%" class="page-background">
         <tr>
           <td class="playlist-item-top playlist-details"> 
             {{ pl['size'] }} maps | {{ pl['duration'] }} | {{ pl['timestamp'] }}
           </td>
         </tr>
         <tr>
-          <td class="playlist-item-bottom playlist-details">
+          <td>
+            <hr class="thin-line">
+          </td>
+        </tr>
+        <tr>
+          <td class="playlist-item-top playlist-details">
             {{ pl['desc'] }}
           </td>
         </tr>

@@ -25,6 +25,7 @@ class Playlist_Finder():
 		self.db = db
 		self.collection = collection
 		self.playlist_details = self.fetch_playlist_details()
+		self.total_playlists = len( self.playlist_details )
 	
 	def client( self ):
 		return self.client_con[self.db][self.collection]
@@ -98,35 +99,44 @@ class Playlist_Finder():
 				})
 		return table_data
 
-	def get_search_playlists( self, search_string ):
-
-		def match_kw( str1 ):
-			str1 = str1.lower().split()
-			str2 = search_string.replace( "%20", " " ).lower().split()
-
-			for word in str1:
-				if word in str2:
-					return True
-
+	def get_playlists( self, query='', sort='new', user=None, empty=False ):
+		def search( strs ):
+			for str1 in strs:
+				str1 = str1.lower().split()
+				str2 = query.replace( "%20", " " ).lower().split()
+				for word1 in str1:
+					for word2 in str2:
+						if word2 in word1:
+							return True
 			return False
 
+		# get playlists that are from the specified user ( or all if user is None )
+		# and that match the query string
 		table_data = []
 		for pl in self.get_playlist_details():
-			if match_kw( pl['playlist_title'] ) or match_kw( pl['playlist_creator_name'] ) or match_kw( pl['playlist_desc'] ):
-				table_data.insert( 0, {
+			query_tuple = ( pl['playlist_title'], pl['playlist_creator_name'], pl['playlist_desc'] )
+
+			if ( query == '' or search( query_tuple ) ) and ( user is None or pl['playlist_creator_id'] ) and ( empty or ( not empty and pl['playlist_size'] != 0 ) ):
+				playlist = {
 					'playlist_id': pl['playlist_id'],
 					'playlist_title': pl['playlist_title'],
 					'playlist_creator_name': pl['playlist_creator_name'],
 					'playlist_creator_id': pl['playlist_creator_id'],
 					'playlist_size': pl['playlist_size'],
 					'playlist_timestamp': pl['_id'].generation_time.date()
-				})
-		return table_data
+				}
+				# sort playlists
+				if sort == 'old':
+					table_data.append( playlist )
+				else: # 'new'
+					table_data.insert( 0, playlist )
+
+		return table_data, len( table_data )
 
 
 	# insert new playlist
 	def new_playlist( self, creator_id ):
-		api = Osuapi( OSU_TOKEN )
+		api = Osuapi( app.config['OSU_TOKEN'] )
 		playlist_id = ""
 
 		with self.client_con.start_session() as sess:
@@ -147,6 +157,7 @@ class Playlist_Finder():
 		
 		return playlist_id
 
+	# get total number of playlists
 
 	def get_playlist_details( self ):
 		return self.playlist_details

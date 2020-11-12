@@ -1,17 +1,19 @@
 <tr class="nav-bar">
   <td>
-    <table border="0" cellpadding="5" cellspacing="5" width="100%" style="padding:2px">
+    <table border="0" cellpadding="4" cellspacing="0" width="100%" style="padding-top:2px; padding-bottom:2px; padding-left:8px; padding-right:8px;">
       <tr>
         <td class="nav-left">
           <span class="pagetop">
             <b><a href="/" class="nav-link">osulist</a></b>&nbsp;
-            <a href="/about" class="nav-link">about</a>
+            <a href="/about" class="nav-link">about</a> 
+            | <a href="/?sort=new" class="nav-link">new</a> 
+            | <a href="/?sort=old" class="nav-link">old</a> 
           </span>
         </td>
         <td class="nav-right">
           <span class="pagetop">
-            <form action="/search/" method="GET" class="search-form">
-              <input type="text" name="search_string" placeholder="search" class="search-bar">
+            <form action="/" method="GET" class="search-form">
+              <input type="text" name="q" placeholder="search" class="search-bar">
             </form>&nbsp;&nbsp;
             {% if login['logged_in'] %}
             <a href="/new_playlist" class="navbar-button">new playlist</a>&nbsp;&nbsp;
