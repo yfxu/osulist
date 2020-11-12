@@ -161,9 +161,9 @@ def page_index():
 
 	pages = results_count // playlists_per_page + 1
 
-	if page > pages:
+	if page > pages or page <= 0:
 		abort( 404 )
-		
+
 	return render_template(
 		"index_template.html",
 		banner_text = "search: " + q if q != "" else "Welcome to osulist!",
@@ -424,4 +424,4 @@ def page_beatmap( map_id ):
 """
 
 if __name__ == '__main__':
-	app.run( host='0.0.0.0', port=5000, debug=True )
+	app.run( host='0.0.0.0', port=5000, debug=False )
