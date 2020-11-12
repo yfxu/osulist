@@ -26,10 +26,34 @@
         <tr>
           <td>
             <table border="0" cellpadding="0" cellspacing="0" class="itemlist" width="100%">
+              {% if q != '' and not no_results %}
+              <tr>
+                <td class="playlist-item-top playlist-details">
+                    sort by: 
+                    <form action="/" method="GET" style="display: inline-block;">
+                      <input type="hidden" name="q" value="{{ q }}">
+                      <input type="hidden" name="sort" value="new">
+                      <input type="submit" value="new" class="submit-link">
+                    </form>
+                    | <form action="/" method="GET" style="display: inline-block;">
+                      <input type="hidden" name="q" value="{{ q }}">
+                      <input type="hidden" name="sort" value="old">
+                      <input type="submit" value="old" class="submit-link">
+                    </form>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <hr class="thin-line">
+                </td>
+              </tr>
+              {% endif %}
+            </table>
+            <table border="0" cellpadding="0" cellspacing="0" class="itemlist" width="100%">            
               {% if no_results %}
               <tr class="index-row-even">
                 <td class="playlist-item-top normal-text medium-line-spacing">
-                   no results found for "{{ search_string }}"
+                   no results found for "{{ q }}"
                 </td>
               </tr>
               {% endif %}
@@ -55,6 +79,33 @@
             </table>
           </td>
         </tr>
+        <table border="0" cellpadding="0" cellspacing="0" class="itemlist" width="100%">
+          <tr>
+            <td>
+              <hr class="thin-line">
+            </td>
+          </tr>
+        </table>
+        <table border="0" cellpadding="0" cellspacing="0" class="itemlist" width="100%">
+          <tr>
+            <td class="playlist-item-top playlist-details nav-left">
+              <span>
+                {% for i in range( pages ) %}
+                {% if i + 1 == page %}
+                <u><a href="/?page={{ i + 1 }}" class="playlist-details-link">{{ i + 1 }}</a></u>
+                {% else %}
+                <a href="/?page={{ i + 1 }}" class="playlist-details-link">{{ i + 1 }}</a>
+                {% endif %}
+                {% endfor %}
+              </span>
+            </td>
+            <td class="playlist-item-top playlist-details nav-right">
+              <span>
+                showing {{ playlists_count }} out of {{ results_count }} playlists
+              </span>
+            </td>
+          </tr>
+        </table>
         {% include 'common/footer.html' %}
       </table>
     </center>

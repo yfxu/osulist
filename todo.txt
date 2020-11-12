@@ -1,12 +1,10 @@
 Features:
 	- ability to like/upvote playlists
 	- sort playlists by new/top
-	- search for playlists
 	- ? beatmap page ?
 	- group playlists
 	- add entire beatmapset
 
 Improvements:
 	- better UI
-		- clearer login button
 		- get a logo
