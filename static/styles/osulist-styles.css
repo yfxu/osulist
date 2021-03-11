@@ -5,7 +5,7 @@
 	--playlist-details-color: #616161;
 	--light-pink-1: #f6eff0;
 	--light-pink-2: #f0e6e7;
-	--white-pink: #faf5f6;
+	--light-pink-3: #e6d8d9;
 	--dark-pink: #e0d3d9;
 	--bright-pink: #ff006f;
 	--bright-pink-2: #d91168;
@@ -42,6 +42,26 @@ hr.pink-line {
 	border-bottom: none;
 	margin: auto;
 	margin-bottom: 4px;
+}
+
+hr.thin-line {
+	margin: 0;
+	padding: 0;
+
+    border: none;
+    height: 1px;
+    background-color: var( --light-pink-3 );
+}
+
+input.submit-link {
+	border: none;
+	padding: 0;
+	color: var( --playlist-details-color );
+	cursor: pointer;
+}
+
+input.submit-link:hover {
+	text-decoration: underline;
 }
 
 .login-button {
@@ -86,6 +106,10 @@ hr.pink-line {
 	font-size: var( --normal-font );
 }
 
+.sub-text {
+	font-size: var( --small-font );
+}
+
 .a-text {
 	color: var( --bright-pink );
 }
@@ -96,7 +120,7 @@ hr.pink-line {
 
 .nav-bar {
 	background-color: var( --bright-pink );
-	color: var( --white-pink );
+	color: var( --light-pink-1 );
 }
 
 .nav-link {
@@ -105,8 +129,6 @@ hr.pink-line {
 
 .nav-left {
 	padding-left: 4px;
-	line-height:12pt; 
-	height:18px;
 }
 
 .nav-right {
@@ -166,7 +188,7 @@ hr.pink-line {
 
 .footer-link {
 	font-size: var( --normal-font );
-	color: var( --normal-font-color );
+	color: var( --light-pink-1 );
 	text-decoration: none;
 }
 
@@ -186,6 +208,16 @@ hr.pink-line {
 	padding-bottom: 5px;
 	padding-left: 12px;
 	padding-right: 12px;
+}
+
+.page-footer {
+	background-color: var( --bright-pink );
+	padding-top: 5px;
+	padding-bottom: 5px;
+	padding-left: 12px;
+	padding-right: 12px;
+
+	color: var( --light-pink-1 );
 }
 
 .page-card {
