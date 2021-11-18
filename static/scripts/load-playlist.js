@@ -1,7 +1,9 @@
+let beatmap_ids = [];
 function init_playlist( data, columns ) {
 	$( window ).on( 'load', function() {
 		$(function() {
-			var table = $('#playlist-table').DataTable( { 
+			data.forEach(map => beatmap_ids.push(map.mirror.split("https://beatconnect.io/b/")[1].split('\'')[0]));
+			let table = $('#playlist-table').DataTable( {
 				data: data,
 				columns: columns,
 				paging: false,

@@ -13,12 +13,15 @@
     <link href="https://nightly.datatables.net/responsive/css/responsive.dataTables.css?_=0733d80df58ca2854b640850303e9ae6.css" rel="stylesheet" type="text/css" />
     <script src="https://nightly.datatables.net/responsive/js/dataTables.responsive.js?_=0733d80df58ca2854b640850303e9ae6"></script>
 
+    <!-- zip.js -->
+    <script type="text/javascript" src="{{ url_for('static', filename='scripts/zip.min.js')}}"></script>
+
     <script src="{{ url_for('static', filename='scripts/load-playlist.js')}}"></script>
     <link href="{{ url_for('static', filename='styles/osulist-styles.css')}}" rel="stylesheet">
     <script type="text/javascript">
       init_playlist( {{data|tojson}}, {{columns|tojson}} );
     </script>
-
+    <script src="{{ url_for('static', filename='scripts/download-playlist.js')}}"></script>
     <title>{{ pl['title'] }} | osulist</title>
   </head>
   <body style="max-width: 1440px; margin: auto;">
@@ -41,6 +44,12 @@
             </td>
             {% endif %}
           </tr>
+          <td class="page-banner playlist-item-top playlist-title-link banner-left">
+              <span>
+                <button onclick="download_playlist()">Download as zip</button>
+                <progress id="download-progress-bar" style="display: none;"></progress>
+              </span>
+          </td>
           {% include 'common/pink_line.html' %}
         </table>
       </table>
