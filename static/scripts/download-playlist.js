@@ -4,15 +4,14 @@ function download_playlist() {
     progressBar.style.display = "block";
     progressBar.setAttribute("max", beatmap_ids.length);
     let files = [];
-    beatmap_ids.forEach(id => {
+    beatmap_ids.forEach(([id, name]) => {
         let xhr = new XMLHttpRequest();
-        xhr.open("GET", `https://api.chimu.moe/v1/download/${id}?n`, true);
+        let param = btoa(JSON.stringify({server: 1, beatmapsetid: parseInt(id)}));
+        xhr.open("GET", `https://api.nerina.pw/download?b=${param}`, true);
         xhr.responseType = "blob";
 
         xhr.onload = () => {
-            files.push([decodeURI(xhr.responseURL.split("?filename=")[1]), xhr.response, id]);
-            console.log(`Downloaded ${files.length} / ${beatmap_ids.length}`);
-            //remember to add
+            files.push([`${id} ${name}.osz`, xhr.response]);
             progressBar.setAttribute("value", parseInt(progressBar.getAttribute("value")) + 1);
             if(files.length === beatmap_ids.length) {
                 zip_playlist(files);
@@ -28,9 +27,9 @@ async function zip_playlist(files) {
     let zipWriter = new zip.ZipWriter(new zip.BlobWriter("application/zip"));
     for (let file of files) {
         try {
-            await zipWriter.add(file[0] != "undefined" ? file[0] : `Error_map_${file[2]}`, new zip.BlobReader(file[1]));
+            await zipWriter.add(file[0], new zip.BlobReader(file[1]));
         } catch {
-            await zipWriter.add(`Error_map_${file[2]}`, new zip.BlobReader(file[1]));
+            await zipWriter.add(`Error`, new zip.BlobReader(file[1]));
         }
     }
     let zipBlob = await zipWriter.close();
