@@ -1,4 +1,5 @@
-let progressBar = document.getElementById("download-progress-bar");
+let progressBar;
+$(window).on('load', () => {progressBar = document.getElementById("download-progress-bar")});
 function download_playlist() {
     progressBar.setAttribute("value", 1);
     progressBar.style.display = "block";
