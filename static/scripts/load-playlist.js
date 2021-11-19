@@ -1,7 +1,11 @@
+let beatmap_ids = [];
+let progressBar;
 function init_playlist( data, columns ) {
 	$( window ).on( 'load', function() {
 		$(function() {
-			var table = $('#playlist-table').DataTable( { 
+			progressBar = document.getElementById("download-progress-bar");
+			data.forEach(map => beatmap_ids.push([map.mirror.match(/(?<=<a.*href='https?:\/\/beatconnect.io\/b\/)([0-9]+)(?='.*>.*<\/a>)/)[0], map.title.match(/(?<=<a.*>).*(?= \[.*]<\/a>)/)[0].replaceAll(/[\\/:"*?<>|]+/g, "_")]));
+			let table = $('#playlist-table').DataTable( {
 				data: data,
 				columns: columns,
 				paging: false,
