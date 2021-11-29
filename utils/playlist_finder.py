@@ -136,7 +136,7 @@ class Playlist_Finder():
 
 	# insert new playlist
 	def new_playlist( self, creator_id ):
-		api = Osuapi( app.config['OSU_TOKEN'] )
+		api = Osuapi( OSU_TOKEN )
 		playlist_id = ""
 
 		with self.client_con.start_session() as sess:
